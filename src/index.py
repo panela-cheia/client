@@ -1,5 +1,5 @@
 import tkinter as tk
-from PIL import ImageTk, Image
+from PIL import Image, ImageTk
 
 def change_page(page_name):
     # Função para mudar o conteúdo com base na página selecionada
@@ -23,15 +23,15 @@ sidebar = tk.Frame(root, width=100, bg='#EEEEEE')
 sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
 # Ícone no topo da barra lateral
-icon = ImageTk.PhotoImage(Image.open('assets/icons/icon.png'))
+icon = ImageTk.PhotoImage(Image.open('src/assets/images/logo.png'))
 icon_label = tk.Label(sidebar, image=icon)
 icon_label.pack()
 
 # Botões de página na barra lateral
-pages = ['inicio', 'explorar', 'notificacoes', 'perfil']
+pages = ['home', 'buteco', 'search', 'armazem']
 for page in pages:
     # Carregar a imagem do ícone da pasta assets/icons
-    image = ImageTk.PhotoImage(Image.open(f'assets/icons/{page}.png'))
+    image = ImageTk.PhotoImage(Image.open(f'src/assets/icons/{page}.png'))
 
     # Criar o botão da página
     button = tk.Button(sidebar, image=image, command=lambda page=page: change_page(page))
@@ -42,7 +42,7 @@ content = tk.Frame(root, bg='white')
 content.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
 # Foto de perfil e texto "meu perfil" na barra lateral
-profile_image = ImageTk.PhotoImage(Image.open('assets/icons/profile.png'))
+profile_image = ImageTk.PhotoImage(Image.open('src/assets/images/user.png'))
 profile_label = tk.Label(sidebar, image=profile_image)
 profile_label.pack()
 profile_text = tk.Label(sidebar, text='Meu Perfil')

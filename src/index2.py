@@ -17,12 +17,12 @@ def change_page(layout, page_name):
 
 # Definir o layout da barra lateral
 sidebar_layout = [
-    [sg.Image(filename='assets/icons/icon.png')],
-    [sg.Button('', image_filename='assets/icons/inicio.png', key='inicio')],
-    [sg.Button('', image_filename='assets/icons/explorar.png', key='explorar')],
-    [sg.Button('', image_filename='assets/icons/notificacoes.png', key='notificacoes')],
-    [sg.Button('', image_filename='assets/icons/perfil.png', key='perfil')],
-    [sg.Image(filename='assets/icons/profile.png'), sg.Text('Meu Perfil')]
+    [sg.Image(filename='src/assets/images/logo.png',background_color=("#FFFFFF"))],
+    [sg.Button('', image_filename='src/assets/icons/home.png', key='inicio',button_color=("#FFFFFF","#FFFFFF"),size=(184,44),border_width=0)],
+    [sg.Button('', image_filename='src/assets/icons/buteco.png', key='explorar',button_color=("#FFFFFF","#FFFFFF"),size=(184,44),border_width=0)],
+    [sg.Button('', image_filename='src/assets/icons/search.png', key='notificacoes',button_color=("#FFFFFF","#FFFFFF"),size=(184,44),border_width=0)],
+    [sg.Button('', image_filename='src/assets/icons/armazem.png', key='perfil',button_color=("#FFFFFF","#FFFFFF"),size=(184,44),border_width=0)],
+    [sg.Image(filename='src/assets/images/user.png'), sg.Text('Meu Perfil')]
 ]
 
 # Definir o layout do conteúdo
@@ -33,11 +33,13 @@ content_layout = [
 
 # Definir o layout principal
 layout = [
-    [sg.Column(sidebar_layout, background_color='#EEEEEE', pad=(0, 0), element_justification='center', k='-SIDEBAR-'), 
-     sg.Column(content_layout, k='-CONTENT-')]
+    [
+        sg.Column(sidebar_layout, background_color='#FFF', pad=(0, 0), element_justification='center',vertical_alignment='center',justification='space-between' ,k='-SIDEBAR-',size=(288,1080)), 
+        sg.Column(content_layout, k='-CONTENT-')
+    ]
 ]
 
-window = sg.Window('Instagram', layout)
+window = sg.Window('Panela Cheia', layout,resizable=True)
 
 while True:
     event, values = window.read()
