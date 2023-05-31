@@ -4,11 +4,13 @@ from PySide2.QtCore import Qt
 
 class SignupWindow(QWidget):
 
-    def __init__(self,parent=None):
-        super().__init__(parent)
+    def __init__(self,main_window):
+        super().__init__()
         self.setWindowTitle("SignIn")
-        self.setMinimumSize(1440, 1000)
+        self.setMinimumSize(600, 600)
         self.setStyleSheet("background-color: #FFF;")
+
+        self.main_window = main_window
 
         # Carregando as fontes Roboto Slab
         font_database = QFontDatabase()
@@ -82,11 +84,10 @@ class SignupWindow(QWidget):
         signup_label.setStyleSheet("font-family: 'Roboto Slab'; font-style: normal; font-weight: 700; font-size: 16px; color: #341A0F;")
         signup_layout.addWidget(signup_label)
 
-        signup_link = QLabel("Faça login")
-        signup_link.setStyleSheet("font-family: 'Roboto Slab'; font-style: normal; font-weight: 700; font-size: 16px; color: #D0956C;")
-        signup_link.setOpenExternalLinks(True)
-        signup_link.linkActivated.connect(self.openSignIn)
-        signup_layout.addWidget(signup_link)
+        signup_button = QPushButton("Faça login", signup_container)
+        signup_button.setStyleSheet("background-color: #FFFFFF; font-family: 'Roboto Slab'; font-style: normal; font-weight: 700; font-size: 16px; color: #D0956C;border:none;")
+        signup_button.clicked.connect(self.openSignIn)
+        signup_layout.addWidget(signup_button)
 
         right_layout.addWidget(signup_container)
         right_layout.addStretch()
@@ -127,7 +128,6 @@ class SignupWindow(QWidget):
         print("Username:", username)
         print("Email:", email)
         print("Senha:", password)
-        self.openSignIn()
 
     def openSignIn(self):
-        self.parent().showSignIn()
+        self.main_window.showSignIn()

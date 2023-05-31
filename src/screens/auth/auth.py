@@ -1,13 +1,12 @@
-import sys
-from PySide2.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel, QStackedWidget
-from screens.auth.signin import SigninWindow
-from screens.auth.signup import SignupWindow
+from PySide2.QtWidgets import QMainWindow, QStackedWidget
+from screens.auth.signin.signin import SigninWindow
+from screens.auth.signup.signup import SignupWindow
 
-class MainWindow(QMainWindow):
+class AuthWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Main Window")
+        self.setWindowTitle("Auth")
 
         # Cria o QStackedWidget
         self.stacked_widget = QStackedWidget()
@@ -27,10 +26,3 @@ class MainWindow(QMainWindow):
 
     def showSignUp(self):
         self.stacked_widget.setCurrentWidget(self.signup_window)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())

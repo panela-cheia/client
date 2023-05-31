@@ -1,17 +1,17 @@
 import sys
-from PySide2.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit
-from PySide2.QtGui import QFont, QFontDatabase, QPixmap, QIcon
-from PySide2.QtCore import Signal,Slot,Qt
+from PySide2.QtWidgets import  QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit
+from PySide2.QtGui import QFontDatabase, QPixmap
+from PySide2.QtCore import Qt
 
 
 class SigninWindow(QWidget):
-    switch_window = Signal()
-
-    def __init__(self,parent=None):
-        super().__init__(parent)
+    def __init__(self,main_window):
+        super().__init__()
         self.setWindowTitle("SignUp")
-        self.setMinimumSize(1440, 1000)
+        self.setMinimumSize(600, 600)
         self.setStyleSheet("background-color: #FFF;")
+
+        self.main_window = main_window
 
         # Carregando as fontes Roboto Slab
         font_database = QFontDatabase()
@@ -101,11 +101,10 @@ class SigninWindow(QWidget):
         signup_label.setStyleSheet("font-family: 'Roboto Slab'; font-style: normal; font-weight: 700; font-size: 16px; color: #341A0F;")
         signup_layout.addWidget(signup_label)
 
-        signup_link = QLabel("Registrar-se")
-        signup_link.setStyleSheet("font-family: 'Roboto Slab'; font-style: normal; font-weight: 700; font-size: 16px; color: #D0956C;")
-        signup_link.setOpenExternalLinks(True)
-        signup_link.linkActivated.connect(self.openSignIn)
-        signup_layout.addWidget(signup_link)
+        signup_button = QPushButton("Registrar-se", signup_container)
+        signup_button.setStyleSheet("background-color: #FFFFFF; font-family: 'Roboto Slab'; font-style: normal; font-weight: 700; font-size: 16px; color: #D0956C;border:none;")
+        signup_button.clicked.connect(self.openSignUp)
+        signup_layout.addWidget(signup_button)
 
         right_layout.addWidget(signup_container)
         right_layout.addStretch()
@@ -117,5 +116,5 @@ class SigninWindow(QWidget):
         print("Email:", email)
         print("Senha:", password)
 
-    def openSignIn(self):
-        self.parent().showSignIn()
+    def openSignUp(self):
+        self.main_window.showSignUp()
