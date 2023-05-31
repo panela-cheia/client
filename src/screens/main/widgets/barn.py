@@ -1,14 +1,14 @@
-from PySide2.QtWidgets import QWidget, QLabel,QVBoxLayout
-from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QWidget, QSizePolicy,QVBoxLayout
 
 class BarnWidget(QWidget):
     def __init__(self):
         super().__init__()
 
-        label = QLabel("Barn Widget")
-        label.setAlignment(Qt.AlignCenter)
-        label.setStyleSheet("font-size: 24px;")
-
         layout = QVBoxLayout()
-        layout.addWidget(label)
         self.setLayout(layout)
+
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        self.setStyleSheet("background-color: #FFFFFF;")

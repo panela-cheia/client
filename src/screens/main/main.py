@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         main_widget.setLayout(main_layout)
         self.setCentralWidget(main_widget)
 
-        self.setWindowTitle("Tela Principal")
+        self.setWindowTitle("Panela Cheia")
 
         # Carregando as fontes Roboto Slab
         font_database = QFontDatabase()
