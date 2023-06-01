@@ -9,11 +9,7 @@ json_data = {
                 "name": "Macarronada",
                 "description": "comunidade da galera que gosta de macarronada",
                 "members": "3 membros",
-                "photo": {
-                    "id": "ebfde4cb-8944-4d91-9a7e-d12c7aa9ce73",
-                    "name": "file.png",
-                    "path": "localhost:3030/statics/file.png"
-                }
+                "photo": None
             },
         {
                 "id": "b9339c14-daba-4cc9-b736-50ac8da36d88",
@@ -36,11 +32,7 @@ json_data = {
             "id": "5229e1fa-5b96-48eb-bcec-49f4b413ea7b",
             "name": "João de Barro",
             "username": "@joaodebarro",
-            "photo": {
-                "id": "96a89a09-6d2b-431f-8216-f5403b45cea3",
-                "name": "file.png",
-                "path": "localhost:3030/statics/file.png"
-            },
+            "photo": None,
             "common_followers": "1 amigo(s)",
             "common_dives": "3 buteco(s)"
         },
@@ -56,11 +48,7 @@ json_data = {
             "id": "823e3881-bda1-4f2a-9593-83c8d7fd0044",
             "name": "Artur Papa",
             "username": "@moviepapa",
-            "photo": {
-                "id": "9efa6ab2-f2c0-4985-b4ff-a66f07377fd5",
-                "name": "file.png",
-                "path": "localhost:3030/statics/file.png"
-            },
+            "photo": None,
             "common_followers": "1 amigo(s)",
             "common_dives": "1 buteco(s)"
         },
@@ -150,19 +138,38 @@ class SearchWidget(QWidget):
         for user in users:
             self.addUserResult(results_layout, user)
 
-                # Add dives and horizontal separator
+         # Add a horizontal line
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        line.setStyleSheet("color:#EEEEEE;")
+        results_layout.addWidget(line)
+
+        # Add "Butecos" text with the specified styling
+        butecos_label = QLabel("Butecos")
+        butecos_label.setStyleSheet(
+            "font-family: 'Roboto Slab'; font-style: normal; font-weight: 500; font-size: 24px; color: #42210B;"
+        )
+        butecos_label.setContentsMargins(0, 24, 0, 24)
+        results_layout.addWidget(butecos_label)
+
+        # Add dives and horizontal separator
         for dive in dives:
             self.addDiveResult(results_layout, dive)
 
         # Set the main layout alignment.
+        layout.setAlignment(Qt.AlignTop)
 
     def addUserResult(self, results_layout, user):
         result_layout = QHBoxLayout()
         result_layout.setSpacing(24)
-        result_layout.setContentsMargins(0, 0, 0, 0)
+        result_layout.setContentsMargins(0, 0, 0, 24)  # Updated margin bottom
 
         # Create the icon
-        icon_path = "src/assets/images/profile-1.png"  # Replace with the correct path
+        if user["photo"]:
+            icon_path = user["photo"]["path"]
+        else:
+            icon_path = "src/assets/images/profile-1.png"
         icon_label = QLabel()
         icon_label.setFixedSize(60, 60)
         icon_label.setStyleSheet("border-radius: 50%;")
@@ -199,20 +206,16 @@ class SearchWidget(QWidget):
 
         results_layout.addLayout(result_layout)
 
-        # Add a horizontal line separator
-        separator = QFrame()
-        separator.setFrameShape(QFrame.HLine)
-        separator.setLineWidth(1)
-        separator.setStyleSheet("color: #EEEEEE;")
-        results_layout.addWidget(separator)
-
     def addDiveResult(self, results_layout, bar):
         result_layout = QHBoxLayout()
         result_layout.setSpacing(24)
-        result_layout.setContentsMargins(0, 0, 0, 0)
+        result_layout.setContentsMargins(0, 0, 0, 24)  # Updated margin bottom
 
         # Create the icon
-        icon_path = "src/assets/images/buteco.png"  # Replace with the correct path
+        if bar["photo"]:
+            icon_path = bar["photo"]["path"]
+        else:
+            icon_path = "src/assets/images/buteco.png"
         icon_label = QLabel()
         icon_label.setFixedSize(60, 60)
         icon_label.setStyleSheet("border-radius: 50%;")
@@ -240,7 +243,7 @@ class SearchWidget(QWidget):
         details_layout.addWidget(name_label)
 
         # Create the additional details label
-        additional_details_text = f"{bar['members']} membros"
+        additional_details_text = f"{bar['description']} - {bar['members']}"
         additional_details_label = QLabel(additional_details_text)
         additional_details_label.setStyleSheet(
             "font-family: 'Roboto Slab'; font-style: normal; font-weight: 300; font-size: 14px; color: #42210B;"
@@ -248,13 +251,13 @@ class SearchWidget(QWidget):
         details_layout.addWidget(additional_details_label)
 
         results_layout.addLayout(result_layout)
-
-        # Add a horizontal line separator
-        separator = QFrame()
-        separator.setFrameShape(QFrame.HLine)
-        separator.setLineWidth(1)
-        separator.setStyleSheet("color: #EEEEEE;")
-        results_layout.addWidget(separator)
-
     def search(self, value):
-        print(value)
+        message = {
+            "topic": "@search/dive_and_users",
+            "body": {
+                "user_id": "75621072-e6b5-49ae-a5ff-424707d534b2",
+                "value": value
+            }
+        }
+
+        print(message)
