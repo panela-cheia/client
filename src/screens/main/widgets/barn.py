@@ -1,4 +1,5 @@
-from PySide2.QtWidgets import QWidget, QSizePolicy,QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QFrame, QVBoxLayout, QSpacerItem
+from PySide2.QtWidgets import QWidget, QSizePolicy,QApplication,QPushButton, QMainWindow, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QFrame, QVBoxLayout, QSpacerItem
+from PySide2.QtGui import QPixmap, QIcon, QPainter, QColor
 import sys
 
 class BarnWidget(QMainWindow):
@@ -18,7 +19,6 @@ class BarnWidget(QMainWindow):
         self.setWindowTitle("Armazém")
         self.setStyleSheet("background-color: #FFFFFF;")
         
-
         # Título alinhado à esquerda na parte superior
         title_label = QLabel("Armazém")
         title_label.setStyleSheet(
@@ -26,24 +26,51 @@ class BarnWidget(QMainWindow):
                                 "font-style: normal;"
                                 "font-weight: 900;"
                                 "font-size: 32px;"
-                                "line-height: 42px;"
+                                # "line-height: 42px;"
                                 "color: #341A0F;"
-                                "margin: 10px 0px 10px 10px;")
+                                "margin: 0px 0px 0px 48px;"
+                                )
         
         # Barra de pesquisa
-        search_bar = QLineEdit()
-        search_bar.setStyleSheet("background-color: white; margin: 10px; padding: 5px;")
+        input_layout = QHBoxLayout()
+        input_layout.setSpacing(8)
+        
+        input_widget = QLineEdit()
+        input_widget.setFixedWidth(496)
+        input_widget.setFixedHeight(60)
+        input_widget.setStyleSheet(
+            "background: #F2F2F2; border-radius: 20px; padding: 10px; font-size: 16px;"
+        )
+        input_widget.setPlaceholderText("Pesquisar")
+        
+        # Create the search button
+        search_button = QPushButton()
+        # Replace with your search icon path
+        icon = QIcon("src/assets/images/search.png")
+        pixmap = icon.pixmap(32, 32)  # Adjust the desired size of the pixmap
+        search_button.setIcon(QIcon(pixmap))
+        search_button.setFixedSize(60, 60)
+        search_button.setStyleSheet(
+            "QPushButton { background-color: #F2F2F2; border-radius: 10px; }"
+            "QPushButton:hover { background-color: #BABABA; }"
+        )
+        search_button.setIconSize(search_button.size())
+        search_button.setFlat(True)
+        search_button.clicked.connect(
+            lambda: self.search(value=input_widget.text()))
+        input_layout.addWidget(search_button)
         
         # Layout principal
         main_layout = QVBoxLayout()
-        main_layout.addWidget(title_label)
-        main_layout.addWidget(search_bar)
-        main_layout.setContentsMargins(48, 48, 48, 0)
         main_layout.setSpacing(16)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.addWidget(title_label)
+        main_layout.addWidget(input_widget)
+        main_layout.addLayout(input_layout)
         self.setLayout(main_layout)
         
         # Exemplo de box de receita
-        recipe_box_1 = RecipeBox("Nome da Receita 1", "data 1", "caminho/foto1.jpg")
+        recipe_box_1 = RecipeBox("Nome da Receita 1", "data 1", "src/assets/images/canjiquinha.png")
         recipe_box_2 = RecipeBox("Nome da Receita 2", "data 2", "caminho/foto2.jpg")
         
         # Organização dos boxes de receita em 2 colunas
