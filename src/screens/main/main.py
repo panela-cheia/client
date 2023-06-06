@@ -94,6 +94,7 @@ class MainWindow(QMainWindow):
                                     "QPushButton:hover { background-color: #FFFFFF; }")
         anchor1_label.setStyleSheet("font-family: 'Roboto Slab'; font-style: normal; font-weight: 500; font-size: 18px; color: #341A0F; margin-top: 8px; margin-left: 12px;")
         anchor1_button.clicked.connect(lambda: self.switch_widget(anchors[0]["widget"]))
+        anchor1_button.setFixedSize(190, 60)
         anchor_layout.addWidget(anchor1_button)
 
         # Segundo anchor
@@ -112,6 +113,7 @@ class MainWindow(QMainWindow):
                                     "QPushButton:hover { background-color: #FFFFFF; }")
         anchor2_label.setStyleSheet("font-family: 'Roboto Slab'; font-style: normal; font-weight: 500; font-size: 18px; color: #341A0F; margin-top: 8px; margin-left: 12px;")
         anchor2_button.clicked.connect(lambda: self.switch_widget(anchors[1]["widget"]))
+        anchor2_button.setFixedSize(190, 60)
         anchor_layout.addWidget(anchor2_button)
 
         # Terceiro anchor
@@ -130,6 +132,7 @@ class MainWindow(QMainWindow):
                                     "QPushButton:hover { background-color: #FFFFFF; }")
         anchor3_label.setStyleSheet("font-family: 'Roboto Slab'; font-style: normal; font-weight: 500; font-size: 18px; color: #341A0F; margin-top: 8px; margin-left: 12px;")
         anchor3_button.clicked.connect(lambda: self.switch_widget(anchors[2]["widget"]))
+        anchor3_button.setFixedSize(190, 60)
         anchor_layout.addWidget(anchor3_button)
 
         # Quarto anchor
@@ -148,6 +151,7 @@ class MainWindow(QMainWindow):
                                     "QPushButton:hover { background-color: #FFFFFF; }")
         anchor4_label.setStyleSheet("font-family: 'Roboto Slab'; font-style: normal; font-weight: 500; font-size: 18px; color: #341A0F; margin-top: 8px; margin-left: 12px;")
         anchor4_button.clicked.connect(lambda: self.switch_widget(anchors[3]["widget"]))
+        anchor4_button.setFixedSize(190, 60)
         anchor_layout.addWidget(anchor4_button)
 
 
