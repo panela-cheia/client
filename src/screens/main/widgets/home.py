@@ -81,7 +81,7 @@ class HomeWidget(QMainWindow):
         max_recipes_per_row = 1
         row_layout = None
     
-        for i in range(3):
+        for i in range(10):
             if i % max_recipes_per_row == 0:
                 row_layout = QHBoxLayout()
                 feed_container_layout.addLayout(row_layout)

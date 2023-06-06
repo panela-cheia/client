@@ -177,6 +177,7 @@ class ProfileWidget(QWidget):
         container_infos.addWidget(first_container)
         container_infos.addWidget(second_container)
         container_infos.addWidget(third_container)
+        container_infos.setAlignment(Qt.AlignLeft)
 
         profile_and_info_container.addLayout(container_infos)
 
