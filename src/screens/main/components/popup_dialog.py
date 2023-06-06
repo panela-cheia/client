@@ -1,5 +1,5 @@
-from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QFrame
-from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QFrame, QFileDialog
+from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt
 
 class PopupDialog(QDialog):
@@ -10,7 +10,7 @@ class PopupDialog(QDialog):
         self.setStyleSheet(
             "QDialog {"
             "   background: #FFFFFF;"
-            "   border:1px solid #EEEEEE;"
+            "   border: 1px solid #EEEEEE;"
             "}"
             "QLabel {"
             "   color: #341A0F;"
@@ -18,6 +18,9 @@ class PopupDialog(QDialog):
             "}"
             "QFrame#header {"
             "   border-bottom: 2px solid #EEEEEE;"
+            "}"
+            "QFrame#content {"
+            "   padding: 20px;"
             "}"
         )
         self.setFixedSize(640, 640)
@@ -45,6 +48,9 @@ class PopupDialog(QDialog):
             "QPushButton { background-color: #F2F2F2; border-radius: 10px; }"
             "QPushButton:hover { background-color: #BABABA; }"
         )
+        # Load the image for the close button
+        close_button_icon = QIcon("src/assets/icons/x.png")
+        close_button.setIcon(close_button_icon)
         close_button.clicked.connect(self.close)
 
         # Add the close button to the header
@@ -53,11 +59,54 @@ class PopupDialog(QDialog):
         # Add the header frame to the main layout
         main_layout.addWidget(header_frame)
 
-        # Load the image for the close button
-        close_button_icon = QIcon("src/assets/icons/x.png")
-        close_button.setIcon(close_button_icon)
+        # Create the content frame
+        content_frame = QFrame(objectName="content")
+        content_layout = QVBoxLayout(content_frame)
+        content_layout.setContentsMargins(0, 0, 0, 0)
 
+        # Add the content frame to the main layout
+        main_layout.addWidget(content_frame)
 
-        # Add the content label
-        content_label = QLabel("Popup Content")
-        main_layout.addWidget(content_label)
+        # Create the image label
+        self.image_label = QLabel()
+        self.image_pixmap = QPixmap("src/assets/images/create-recipe.png")
+        self.image_label.setPixmap(self.image_pixmap)
+        content_layout.addWidget(self.image_label, alignment=Qt.AlignCenter)
+
+        # Create the text label
+        text_label = QLabel("Atualize seu livro de receitas")
+        text_label.setStyleSheet("font-family: 'Roboto Slab';font-size: 20px;color: #341A0F;")
+        text_label.setAlignment(Qt.AlignCenter)
+        content_layout.addWidget(text_label, alignment=Qt.AlignCenter)
+
+        # Create the upload button
+        upload_button = QPushButton("Selecione do seu computador")
+        upload_button.setStyleSheet(
+            "QPushButton {"
+            "   background-color: #42210B;"
+            "   color: white;"
+            "   border-radius: 15px;"
+            "   font-family: 'Roboto Slab';"
+            "   font-style: normal;"
+            "   font-weight: 500;"
+            "   font-size: 14px;"
+            "   padding: 8px 16px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #5D2B0F;"
+            "}"
+            "QPushButton:pressed {"
+            "   background-color: #341A0F;"
+            "}"
+        )
+        upload_button.clicked.connect(self.upload_image)
+        content_layout.addWidget(upload_button, alignment=Qt.AlignCenter)
+
+    def upload_image(self):
+        file_dialog = QFileDialog()
+        file_dialog.setFileMode(QFileDialog.ExistingFile)
+        file_dialog.setNameFilter("Images (*.png *.xpm *.jpg *.bmp)")
+        if file_dialog.exec_():
+            file_path = file_dialog.selectedFiles()[0]
+            self.image_pixmap = QPixmap(file_path)
+            self.image_label.setPixmap(self.image_pixmap)
