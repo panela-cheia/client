@@ -3,6 +3,8 @@ from PySide2.QtWidgets import QApplication,QScrollArea,QVBoxLayout, QMainWindow,
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt,QSize
 
+from components.popup_dialog import PopupDialog
+
 class HomeWidget(QMainWindow):
     def __init__(self):
         # super().__init__()
@@ -52,6 +54,10 @@ class HomeWidget(QMainWindow):
             "   background-color: #341A0F;"
             "}"
         )
+        create_post_button.clicked.connect(
+            lambda: self.show_popup()
+        )
+
         # Layout para o título e o botão
         title_layout = QHBoxLayout()
         title_layout.setContentsMargins(48, 48, 0, 0)
@@ -295,7 +301,9 @@ class HomeWidget(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
-
+    def show_popup(self):
+        popup = PopupDialog(self)
+        popup.exec_()
 
 
 class ReactionWidget(QWidget):
