@@ -162,7 +162,7 @@ class BarnWidget(QWidget):
         feed_container.setLayout(feed_container_layout)
 
         # Add recipe posts dynamically (replace with your own logic)
-        max_recipes_per_row = 3
+        max_recipes_per_row = 4
         row_layout = None
     
         for i, recipe in enumerate(recipe_data["recipes"]):
@@ -175,7 +175,7 @@ class BarnWidget(QWidget):
             post_container.setStyleSheet(
                 "QFrame { background: #FFFFFF; border: 2px solid #F2F2F2; border-radius: 16px; padding: 11px 16px; }"
             )
-            post_container.setFixedSize(200, 320)
+            post_container.setFixedSize(300, 420)
 
             layout = QVBoxLayout(post_container)
             layout.setContentsMargins(0, 0, 0, 0)
@@ -206,7 +206,7 @@ class BarnWidget(QWidget):
             photo_path = "src/assets/images/recipe.png"
             recipe_photo_label = QLabel()
             recipe_photo_pixmap = QPixmap(photo_path)  # Replace with the actual path to the photo
-            recipe_photo_label.setFixedSize(192, 192)
+            recipe_photo_label.setFixedSize(250, 250)
             recipe_photo_label.setPixmap(recipe_photo_pixmap.scaled(
                 recipe_photo_label.size(),
                 Qt.AspectRatioMode.IgnoreAspectRatio,

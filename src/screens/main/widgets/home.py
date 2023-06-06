@@ -86,8 +86,9 @@ class HomeWidget(QMainWindow):
         # Add recipe posts dynamically (replace with your own logic)
         max_recipes_per_row = 1
         row_layout = None
+        quantity = 10
     
-        for i in range(10):
+        for i in range(quantity):
             if i % max_recipes_per_row == 0:
                 row_layout = QHBoxLayout()
                 feed_container_layout.addLayout(row_layout)
@@ -97,7 +98,7 @@ class HomeWidget(QMainWindow):
             post_container.setStyleSheet(
                 "QFrame { background: #FFFFFF; border: 2px solid #F2F2F2; border-radius: 16px; padding: 11px 16px; }"
             )
-            post_container.setFixedSize(200, 320)
+            # post_container.setFixedSize(300, 320)
 
             layout = QVBoxLayout(post_container)
             layout.setContentsMargins(0, 0, 0, 0)
