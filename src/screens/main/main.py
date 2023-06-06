@@ -48,6 +48,9 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(main_widget)
 
         self.setWindowTitle("Panela Cheia")
+        # Definir ícone
+        icon = QIcon("src/assets/images/logo.png")
+        self.setWindowIcon(icon)
 
         # Carregando as fontes Roboto Slab
         font_database = QFontDatabase()
