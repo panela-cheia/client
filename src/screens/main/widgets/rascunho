@@ -1,0 +1,76 @@
+        groups_layout = QHBoxLayout()
+        central_layout.addLayout(groups_layout)
+
+        images_layout = QHBoxLayout()
+        
+
+        for _ in range(2):  # Exemplo com 4 quadrados, você pode adicionar quantos desejar
+            group_widget = QWidget()
+            group_widget.setFixedSize(279, 233)
+            
+            group_layout = QVBoxLayout(group_widget)
+            group_layout.setContentsMargins(0, 0, 0, 0)  # Ajuste das margens internas do layout do grupo
+            group_widget.setLayout(group_layout)
+            # Estilo da borda do grupo
+            group_widget.setStyleSheet(
+                "border-radius: 20px"
+            )  
+            # Título
+            group_title_label = QLabel("Turma do italiano")
+            group_title_label.setFont(QFont("Roboto Slab", 20))
+            group_title_label.setStyleSheet("font-weight: bold; color: #341A0F;")
+            group_layout.addWidget(group_title_label)
+
+            # Subtítulo
+            subtitle_label = QLabel("Subtítulo")
+            subtitle_label.setStyleSheet("color: #341A0F;")
+            group_layout.addWidget(subtitle_label)
+
+            # Imagem
+            image_label1 = QLabel()
+            pixmap1 = QPixmap("src/assets/images/ney_ju.png")
+            image_label1.setPixmap(pixmap1.scaled(36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
+            image_label1.setFixedSize(36, 36)
+            image_label1.setStyleSheet("border-radius: 50%;")
+            
+            image_label2 = QLabel()
+            pixmap2 = QPixmap("src/assets/images/messi_ju.png")
+            image_label2.setPixmap(pixmap2.scaled(36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
+            image_label2.setFixedSize(36, 36)
+            image_label2.setStyleSheet("border-radius: 50%;")
+            
+            image_label3 = QLabel()
+            pixmap3 = QPixmap("src/assets/images/jordan_ju.png")
+            image_label3.setPixmap(pixmap3.scaled(36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
+            image_label3.setFixedSize(36, 36)
+            image_label3.setStyleSheet("border-radius: 50%;")
+            
+            group_layout.addWidget(image_label1)
+            group_layout.addWidget(image_label2)
+            group_layout.addWidget(image_label3)
+
+            photo_path = "src/assets/images/ney_ju.png"
+            dive_photo_label = QLabel()
+            dive_photo_pixmap = QPixmap(photo_path)  # Replace with the actual path to the photo
+            dive_photo_label.setFixedSize(60, 60)
+            dive_photo_label.setPixmap(dive_photo_pixmap.scaled(
+                dive_photo_label.size(), 
+                Qt.AspectRatioMode.KeepAspectRatio, 
+                Qt.TransformationMode.SmoothTransformation
+            ))
+            dive_photo_label.setStyleSheet("border:none; border-radius: 50%;")  # Remove border styling from the photo label
+            
+            photo_path2 = "src/assets/images/messi_ju.png"
+            dive_photo_label2 = QLabel()
+            dive_photo_pixmap2 = QPixmap(photo_path2)  # Replace with the actual path to the photo
+            dive_photo_label2.setFixedSize(60, 60)
+            dive_photo_label2.setPixmap(dive_photo_pixmap2.scaled(
+                dive_photo_label2.size(), 
+                Qt.AspectRatioMode.KeepAspectRatio, 
+                Qt.TransformationMode.SmoothTransformation
+            ))
+            dive_photo_label2.setStyleSheet("border:none; border-radius: 50%;")  # Remove border styling from the photo label
+
+            # Add the recipe photo label to the layout
+            layout.addWidget(dive_photo_label)
+            layout.addWidget(dive_photo_label2)

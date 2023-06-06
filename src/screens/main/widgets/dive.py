@@ -14,7 +14,7 @@ json_data = {
     },
     {
         "id": "b9339c14-daba-4cc9-b736-50ac8da36d88",
-        "name": "Açaí",
+        "name": "Colherada",
         "description": "teste",
         "members": "3 membros",
         "photo": None
@@ -28,7 +28,7 @@ json_data = {
     },
     {
         "id": "b9339c14-daba-4cc9-b736-50ac8da36d88",
-        "name": "Açaí",
+        "name": "Colherada",
         "description": "teste",
         "members": "3 membros",
         "photo": None
@@ -42,7 +42,7 @@ json_data = {
     },
     {
         "id": "b9339c14-daba-4cc9-b736-50ac8da36d88",
-        "name": "Açaí",
+        "name": "Colherada",
         "description": "teste",
         "members": "3 membros",
         "photo": None
@@ -59,21 +59,18 @@ class DiveWidget(QWidget):
         main_layout.setSpacing(16)  # Ajuste do espaçamento
         self.setLayout(main_layout)
 
-        # Configuração do container central
-        central_container = QWidget()
-        main_layout.addWidget(central_container)
-
-        central_layout = QVBoxLayout(central_container)
-        central_layout.setContentsMargins(0, 0, 0, 0)  # Remoção das margens
-        central_container.setLayout(central_layout)
-
         # Configuração do título "Butecos"
         title_layout = QHBoxLayout()
-        central_layout.addLayout(title_layout)
 
         title_label = QLabel("Butecos")
-        title_label.setFont(QFont("Roboto Slab", 32))
-        title_label.setStyleSheet("color: #341A0F;")
+        title_label.setStyleSheet(
+            "font-family: 'Roboto Slab';"
+            "font-style: normal;"
+            "font-weight: 900;"
+            "font-size: 32px;"
+            "line-height: 42px;"
+            "color: #341A0F;"
+        )
         title_layout.addWidget(title_label)
 
         add_button = QPushButton()
@@ -101,13 +98,13 @@ class DiveWidget(QWidget):
         )
         main_layout.addWidget(scroll_area)
         
-        # Create a widget to hold the recipe posts
+        # Create a widget to hold the dive posts
         feed_container = QWidget()
         feed_container_layout = QVBoxLayout(feed_container)
         feed_container_layout.setContentsMargins(0, 0, 0, 0)
         feed_container.setLayout(feed_container_layout)
 
-        # Add recipe posts dynamically (replace with your own logic)
+        # Add dive posts dynamically (replace with your own logic)
         max_dives_per_row = 2
         row_layout = None
     
@@ -126,7 +123,7 @@ class DiveWidget(QWidget):
             post_container.setFixedSize(200, 320)
 
             layout = QVBoxLayout(post_container)
-            layout.setContentsMargins(0, 0, 0, 0)
+            # layout.setContentsMargins(0, 0, 0, 0)
             layout.setSizeConstraint(QVBoxLayout.SetMinimumSize)  # Set the size constraint
             layout.setAlignment(Qt.AlignCenter)  # Center-align the contents of the layout
 
@@ -137,7 +134,6 @@ class DiveWidget(QWidget):
                 "font-style: normal;"
                 "font-weight: 700;"
                 "font-size: 24px;"
-                "line-height: 24px;"
                 "color: #341A0F;"
                 "border: none;"
             )
@@ -147,7 +143,6 @@ class DiveWidget(QWidget):
                 "font-family: 'Roboto Slab';"
                 "font-style: normal;"
                 "font-size: 18px;"
-                "line-height: 18px;"
                 "color: #341A0F;"
                 "border: none;"
             )
@@ -161,20 +156,96 @@ class DiveWidget(QWidget):
             # Add the text container to the layout
             layout.addLayout(text_container)
 
-            # Add the recipe photo (assuming you have the path to the image)
-            dive_photo_label = QLabel()
-            photo_path = "src/assets/images/ney_ju.png"
-            dive_photo_pixmap = QPixmap(photo_path)  # Replace with the actual path to the photo
-            dive_photo_label.setFixedSize(60, 60)
-            dive_photo_label.setPixmap(dive_photo_pixmap.scaled(
-                dive_photo_label.size(), 
+            bottom_text_container = QHBoxLayout()
+            bottom_text_container.setSpacing(8)
+
+            # Create the group label
+            members_title_label = QLabel("Membros")
+            members_title_label.setStyleSheet(
+                "font-weight: bold;"
+                "font-family: 'Roboto Slab';"
+                "font-size: 10px;"
+                "color: #341A0F;"
+                "border: none"
+            )
+            post_title_label = QLabel("Publicações")
+            post_title_label.setStyleSheet(
+                "font-weight: bold;"
+                "font-family: 'Roboto Slab';"
+                "font-size: 10px;"
+                "color: #341A0F;"
+                "border: none"
+            )
+            
+            bottom_text_container.addWidget(members_title_label)
+            bottom_text_container.addWidget(post_title_label)
+            
+            layout.addLayout(bottom_text_container)
+
+            # Create the container for the bottom images
+            bottom_images_container = QHBoxLayout()
+            bottom_images_container.setAlignment(Qt.AlignLeft)
+            bottom_images_container.setSpacing(0)
+
+            # Create the bottom-left image
+            bottom_left_image_label1 = QLabel()
+            bottom_left_image_pixmap1 = QPixmap("src/assets/images/ney_ju.png")
+            # bottom_left_image_label1.setFixedSize(50, 50)
+            bottom_left_image_label1.setPixmap(bottom_left_image_pixmap1.scaled(
+                30, 30, 
+                Qt.AspectRatioMode.IgnoreAspectRatio, 
+                Qt.TransformationMode.SmoothTransformation
+            ))
+            bottom_left_image_label1.setStyleSheet(
+                "border: none;"
+                "border-radius: 18px;"
+            )
+            
+            bottom_left_image_label2 = QLabel()
+            bottom_left_image_pixmap2 = QPixmap("src/assets/images/jordan_ju.png")
+            # bottom_left_image_label2.setFixedSize(50, 50)
+            bottom_left_image_label2.setPixmap(bottom_left_image_pixmap2.scaled(
+                30, 30,
+                Qt.AspectRatioMode.IgnoreAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            ))
+            bottom_left_image_label2.setStyleSheet(
+                "border: none;"
+                "border-radius: 18px;"
+            )
+            
+            bottom_left_image_label3 = QLabel()
+            bottom_left_image_pixmap3 = QPixmap("src/assets/images/messi_ju.png")
+            # bottom_left_image_label3.setFixedSize(50, 50)
+            bottom_left_image_label3.setPixmap(bottom_left_image_pixmap3.scaled(
+                30, 30,
+                Qt.AspectRatioMode.IgnoreAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            ))
+            bottom_left_image_label3.setStyleSheet(
+                "border: none;"
+                "border-radius: 18px;"
+            )
+
+            # Create the bottom-right image
+            bottom_right_image_label = QLabel()
+            bottom_right_image_pixmap = QPixmap("src/assets/images/buteco.png")  # Substitua "path_to_image" pelo caminho real da imagem
+            bottom_right_image_label.setPixmap(bottom_right_image_pixmap.scaled(
+                30, 30, 
                 Qt.AspectRatioMode.KeepAspectRatio, 
                 Qt.SmoothTransformation
             ))
-            dive_photo_label.setStyleSheet("border:none; border-radius: 50%;")  # Remove border styling from the photo label
+            bottom_right_image_label.setStyleSheet(
+                "border: none;"
+                "border-radius: 50%;"
+            )
 
-            # Add the recipe photo label to the layout
-            layout.addWidget(dive_photo_label)
+            bottom_images_container.addWidget(bottom_left_image_label1)
+            bottom_images_container.addWidget(bottom_left_image_label2)
+            bottom_images_container.addWidget(bottom_left_image_label3)
+            bottom_images_container.addWidget(bottom_right_image_label) 
+            
+            layout.addLayout(bottom_images_container)
 
             row_layout.addWidget(post_container)
 
