@@ -9,42 +9,42 @@ json_data = {
         "id": "4ebc6c64-7f1b-41f4-90e5-47c5e1456920",
         "name": "Macarronada",
         "description": "comunidade da galera que gosta de macarronada",
-        "members": "3 membros",
+        "members": "3",
         "photo": None
     },
     {
         "id": "b9339c14-daba-4cc9-b736-50ac8da36d88",
         "name": "Colherada",
         "description": "teste",
-        "members": "3 membros",
+        "members": "3",
         "photo": None
     },
     {
         "id": "4ebc6c64-7f1b-41f4-90e5-47c5e1456920",
         "name": "Macarronada",
         "description": "comunidade da galera que gosta de macarronada",
-        "members": "3 membros",
+        "members": "3",
         "photo": None
     },
     {
         "id": "b9339c14-daba-4cc9-b736-50ac8da36d88",
         "name": "Colherada",
         "description": "teste",
-        "members": "3 membros",
+        "members": "3",
         "photo": None
     },
     {
         "id": "4ebc6c64-7f1b-41f4-90e5-47c5e1456920",
         "name": "Macarronada",
         "description": "comunidade da galera que gosta de macarronada",
-        "members": "3 membros",
+        "members": "3",
         "photo": None
     },
     {
         "id": "b9339c14-daba-4cc9-b736-50ac8da36d88",
         "name": "Colherada",
         "description": "teste",
-        "members": "3 membros",
+        "members": "3",
         "photo": None
     }]
 }
@@ -117,10 +117,11 @@ class DiveWidget(QWidget):
 
             # Create the post container
             post_container = QFrame()
+            post_container.setFixedSize(200, 320)
             post_container.setStyleSheet(
                 "QFrame { background: #FFFFFF; border: 2px solid #F2F2F2; border-radius: 16px; padding: 11px 16px; }"
             )
-            post_container.setFixedSize(200, 320)
+            # post_container.setMinimumSize(100, 100)
 
             layout = QVBoxLayout(post_container)
             # layout.setContentsMargins(0, 0, 0, 0)
@@ -147,9 +148,22 @@ class DiveWidget(QWidget):
                 "border: none;"
             )
 
-            # Create the text and save button container
+            max_text_length = 14
+
+            # Verificando se o texto excede o tamanho máximo
+            if len(dives["description"]) > max_text_length:
+                truncated_text = dive_description_label.text()[:max_text_length] + "..."
+                dive_description_label.setToolTip(dives["description"])  # Configurar tooltip com o texto completo
+            else:
+                truncated_text = dive_description_label.text()
+
+            dive_description_label.setText(truncated_text)
+
+            # Configurando a dica de ferramenta para exibir o texto completo
+            dive_description_label.setMouseTracking(True)
+
             text_container = QVBoxLayout()
-            text_container.setSpacing(8)
+            text_container.setSpacing(5)
             text_container.addWidget(dive_name_label)
             text_container.addWidget(dive_description_label)
 
@@ -157,9 +171,10 @@ class DiveWidget(QWidget):
             layout.addLayout(text_container)
 
             bottom_text_container = QHBoxLayout()
-            bottom_text_container.setSpacing(8)
 
-            # Create the group label
+            bottom_left_layout = QVBoxLayout()
+            bottom_left_layout.setSpacing(0)
+
             members_title_label = QLabel("Membros")
             members_title_label.setStyleSheet(
                 "font-weight: bold;"
@@ -168,84 +183,47 @@ class DiveWidget(QWidget):
                 "color: #341A0F;"
                 "border: none"
             )
-            post_title_label = QLabel("Publicações")
+            bottom_left_number_label = QLabel(dives["members"])
+            bottom_left_number_label.setStyleSheet(
+                "font-weight: bold;"
+                "font-family: 'Roboto Slab';"
+                "font-size: 10px;"
+                "color: #341A0F;"
+                "border: none;"
+            )
+
+            bottom_left_layout.addWidget(members_title_label)
+            bottom_left_layout.addWidget(bottom_left_number_label)
+
+            bottom_right_layout = QVBoxLayout()
+            bottom_right_layout.setSpacing(0)
+
+            post_title_label = QLabel("Publicações")            
             post_title_label.setStyleSheet(
                 "font-weight: bold;"
                 "font-family: 'Roboto Slab';"
                 "font-size: 10px;"
                 "color: #341A0F;"
-                "border: none"
+                "border: none;"
             )
-            
-            bottom_text_container.addWidget(members_title_label)
-            bottom_text_container.addWidget(post_title_label)
-            
+
+            bottom_right_number_label = QLabel("2")
+            bottom_right_number_label.setStyleSheet(
+                "font-weight: bold;"
+                "font-family: 'Roboto Slab';"
+                "font-size: 10px;"
+                "color: #341A0F;"
+                "border: none;"
+            )
+
+
+            bottom_right_layout.addWidget(post_title_label)
+            bottom_right_layout.addWidget(bottom_right_number_label)
+
+            bottom_text_container.addLayout(bottom_left_layout)
+            bottom_text_container.addLayout(bottom_right_layout)
+
             layout.addLayout(bottom_text_container)
-
-            # Create the container for the bottom images
-            bottom_images_container = QHBoxLayout()
-            bottom_images_container.setAlignment(Qt.AlignLeft)
-            bottom_images_container.setSpacing(0)
-
-            # Create the bottom-left image
-            bottom_left_image_label1 = QLabel()
-            bottom_left_image_pixmap1 = QPixmap("src/assets/images/ney_ju.png")
-            # bottom_left_image_label1.setFixedSize(50, 50)
-            bottom_left_image_label1.setPixmap(bottom_left_image_pixmap1.scaled(
-                30, 30, 
-                Qt.AspectRatioMode.IgnoreAspectRatio, 
-                Qt.TransformationMode.SmoothTransformation
-            ))
-            bottom_left_image_label1.setStyleSheet(
-                "border: none;"
-                "border-radius: 18px;"
-            )
-            
-            bottom_left_image_label2 = QLabel()
-            bottom_left_image_pixmap2 = QPixmap("src/assets/images/jordan_ju.png")
-            # bottom_left_image_label2.setFixedSize(50, 50)
-            bottom_left_image_label2.setPixmap(bottom_left_image_pixmap2.scaled(
-                30, 30,
-                Qt.AspectRatioMode.IgnoreAspectRatio,
-                Qt.TransformationMode.SmoothTransformation
-            ))
-            bottom_left_image_label2.setStyleSheet(
-                "border: none;"
-                "border-radius: 18px;"
-            )
-            
-            bottom_left_image_label3 = QLabel()
-            bottom_left_image_pixmap3 = QPixmap("src/assets/images/messi_ju.png")
-            # bottom_left_image_label3.setFixedSize(50, 50)
-            bottom_left_image_label3.setPixmap(bottom_left_image_pixmap3.scaled(
-                30, 30,
-                Qt.AspectRatioMode.IgnoreAspectRatio,
-                Qt.TransformationMode.SmoothTransformation
-            ))
-            bottom_left_image_label3.setStyleSheet(
-                "border: none;"
-                "border-radius: 18px;"
-            )
-
-            # Create the bottom-right image
-            bottom_right_image_label = QLabel()
-            bottom_right_image_pixmap = QPixmap("src/assets/images/buteco.png")  # Substitua "path_to_image" pelo caminho real da imagem
-            bottom_right_image_label.setPixmap(bottom_right_image_pixmap.scaled(
-                30, 30, 
-                Qt.AspectRatioMode.KeepAspectRatio, 
-                Qt.SmoothTransformation
-            ))
-            bottom_right_image_label.setStyleSheet(
-                "border: none;"
-                "border-radius: 50%;"
-            )
-
-            bottom_images_container.addWidget(bottom_left_image_label1)
-            bottom_images_container.addWidget(bottom_left_image_label2)
-            bottom_images_container.addWidget(bottom_left_image_label3)
-            bottom_images_container.addWidget(bottom_right_image_label) 
-            
-            layout.addLayout(bottom_images_container)
 
             row_layout.addWidget(post_container)
 
