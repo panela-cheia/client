@@ -1,22 +1,12 @@
-import sys
-from PySide2.QtWidgets import QApplication,QScrollArea,QVBoxLayout, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QFrame,QSizePolicy, QSpacerItem
+from PySide2.QtWidgets import QScrollArea,QVBoxLayout, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QFrame,QSpacerItem, QSizePolicy
 from PySide2.QtGui import QIcon, QPixmap
-from PySide2.QtCore import Qt,QSize
+from PySide2.QtCore import Qt
+
 
 from components.popup_dialog import PopupDialog
 
 class HomeWidget(QMainWindow):
     def __init__(self):
-        # super().__init__()
-
-        # layout = QVBoxLayout()
-        # self.setLayout(layout)
-
-        # self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # layout.setContentsMargins(0, 0, 0, 0)
-        # layout.setSpacing(0)
-
-        # self.setStyleSheet("background-color: #FFFFFF;")
         super().__init__()
 
         # Título "HOME" no canto superior esquerdo
@@ -98,11 +88,12 @@ class HomeWidget(QMainWindow):
             post_container.setStyleSheet(
                 "QFrame { background: #FFFFFF; border: 2px solid #F2F2F2; border-radius: 16px; padding: 11px 16px; }"
             )
-            # post_container.setFixedSize(300, 320)
+
+            post_container.setFixedWidth(655)
 
             layout = QVBoxLayout(post_container)
             layout.setContentsMargins(0, 0, 0, 0)
-            layout.setSizeConstraint(QVBoxLayout.SetMinimumSize)  # Set the size constraint
+            #layout.setSizeConstraint(QVBoxLayout.SetMinimumSize)  # Set the size constraint
             layout.setAlignment(Qt.AlignCenter)  # Center-align the contents of the layout
 
             #create user photo
@@ -182,7 +173,7 @@ class HomeWidget(QMainWindow):
             photo_path = "src/assets/images/recipe.png"
             recipe_photo_label = QLabel()
             recipe_photo_pixmap = QPixmap(photo_path)  # Replace with the actual path to the photo
-            recipe_photo_label.setFixedSize(700, 500)
+            recipe_photo_label.setFixedSize(589, 393)
             recipe_photo_label.setPixmap(recipe_photo_pixmap.scaled(
                 recipe_photo_label.size(),
                 Qt.AspectRatioMode.IgnoreAspectRatio,
@@ -289,12 +280,24 @@ class HomeWidget(QMainWindow):
 
             row_layout.addWidget(post_container)
 
+
+
         scroll_area.setWidget(feed_container)
-    
+
+        # Layout para o título e o botão
+        title_button_container = QHBoxLayout()
+        title_button_container.setContentsMargins(0, 48, 0, 48)
+        title_button_container.addWidget(title_label)
+        title_button_container.addWidget(create_post_button)
+
+        # Adicionar um QSpacerItem para preencher o espaço à direita
+        spacer_item = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Preferred)
+        title_button_container.addItem(spacer_item)
+
+
         # Layout principal
         main_layout = QVBoxLayout()
-        main_layout.addLayout(title_layout)
-        main_layout.addWidget(create_post_button)
+        main_layout.addLayout(title_button_container)
         main_layout.addWidget(scroll_area)
 
         # Widget principal
