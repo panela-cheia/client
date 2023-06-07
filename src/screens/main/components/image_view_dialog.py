@@ -85,20 +85,32 @@ class ImageViewDialog(QDialog):
 
         # Create the second container for the form
         form_container = QGroupBox("Formulário")
-        form_container.setStyleSheet("QGroupBox { background-color: #FFFFFF; }")
+        form_container.setStyleSheet(
+            "QGroupBox { background-color: #FFFFFF;}"
+            "QGroupBox::title {"
+            "   font-family: 'Roboto';"
+            "   font-size: 24px;"
+            "   font-weight: 700;"
+            "   color: #341A0F;"
+            "}"
+        )
         form_container_layout = QFormLayout(form_container)
 
         # Create the form fields
         name_label = QLabel("Nome:")
+        name_label.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
         name_input = QLineEdit()
         form_container_layout.addRow(name_label, name_input)
 
         description_label = QLabel("Descrição:")
+        description_label.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
         description_input = QLineEdit()
         form_container_layout.addRow(description_label, description_input)
 
         category_label = QLabel("Buteco relacionado:")
+        category_label.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
         category_combobox = QComboBox()
+        category_combobox.addItem("")
         category_combobox.addItem("Buteco 1")
         category_combobox.addItem("Buteco 2")
         category_combobox.addItem("Buteco 3")
@@ -117,23 +129,6 @@ class ImageViewDialog(QDialog):
         cancel_button = QPushButton("Cancelar")
         cancel_button.setStyleSheet(
             "QPushButton {"
-            "   background-color: #F2F2F2;"
-            "   border: 1px solid #CCCCCC;"
-            "   border-radius: 10px;"
-            "   padding: 10px 20px;"
-            "   font-family: 'Roboto';"
-            "   font-size: 14px;"
-            "}"
-            "QPushButton:hover {"
-            "   background-color: #E0E0E0;"
-            "}"
-        )
-        cancel_button.clicked.connect(self.close)
-
-        # Create the save button
-        save_button = QPushButton("Próximo")
-        save_button.setStyleSheet(
-            "QPushButton {"
             "   background-color: #FF6B6B;"
             "   border: none;"
             "   border-radius: 10px;"
@@ -144,6 +139,25 @@ class ImageViewDialog(QDialog):
             "}"
             "QPushButton:hover {"
             "   background-color: #FF8F8F;"
+            "}"
+        )
+        cancel_button.clicked.connect(self.close)
+
+        # Create the save button
+        save_button = QPushButton("Próximo")
+        save_button.setStyleSheet(
+            "QPushButton {"
+            "   background-color: #42210B;"
+            "   border: none;"
+            "   border-radius: 10px;"
+            "   padding: 10px 20px;"
+            "   font-family: 'Roboto';"
+            "   font-size: 14px;"
+            "   font-weight: 700;"
+            "   color: #FFFFFF;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #42210B;"
             "}"
         )
         save_button.clicked.connect(lambda: self.save_recipe(name=name_input.text(),description=description_input.text(),dive=category_combobox.currentText(),image_path=image_path))

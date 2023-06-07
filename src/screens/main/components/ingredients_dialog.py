@@ -3,7 +3,7 @@ from PySide2.QtWidgets import (
     QScrollArea, QWidget, QLineEdit, QComboBox, QSizePolicy, QBoxLayout
 )
 from PySide2.QtGui import QIcon, QPixmap
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt,QSize
 
 class IngredientsDialog(QDialog):
     def __init__(self, name, description, dive, image_path):
@@ -88,7 +88,7 @@ class IngredientsDialog(QDialog):
         # Create the add button
         add_button = QPushButton("Adicionar")
         add_button.setStyleSheet(
-            "QPushButton { background-color: #42210B; border-radius: 10px; color: #FFFFFF; "
+            "QPushButton { background-color: #D0956C; border-radius: 10px; color: #FFFFFF; "
             "font-family: 'Roboto Slab'; font-style: normal; font-weight: 400; font-size: 16px; "
             "width: 277px; height: 42px; }"
             "QPushButton:hover { background-color: #BABABA; }"
@@ -125,6 +125,12 @@ class IngredientsDialog(QDialog):
 
         # Create the submit button
         submit_button = QPushButton("Enviar")
+        submit_button.setStyleSheet(
+            "QPushButton { background-color: #42210B; border-radius: 10px; color: #FFFFFF; "
+            "font-family: 'Roboto Slab'; font-style: normal; font-weight: 400; font-size: 16px; "
+            "width: 277px; height: 42px; }"
+            "QPushButton:hover { background-color: #BABABA; }"
+        )
         submit_button.clicked.connect(lambda: self.submit(name=name,dive=dive,description=description,image_path=image_path))
 
         main_layout.addWidget(submit_button)
@@ -159,33 +165,47 @@ class IngredientsDialog(QDialog):
             container_widget = QWidget()
             container_layout = QHBoxLayout(container_widget)
             container_layout.setContentsMargins(0, 0, 0, 0)
-            container_widget.setStyleSheet("background-color: #F2F2F2; border-radius: 15px;")
+            container_widget.setStyleSheet("background-color: #ffffff; border-radius: 15px;")
+
+            # Create a container for the labels
+            labels_container = QWidget()
+            labels_layout = QHBoxLayout(labels_container)
 
             # Create the label to display the item information
-            name_label = QLabel(f"Name: {item['name']}")
-            amount_label = QLabel(f"Amount: {item['amount']}")
-            unit_label = QLabel(f"Unit: {item['unit']}")
+            name_label = QLabel(item['name'])
+            amount_label = QLabel(item['amount'])
+            unit_label = QLabel(item['unit'])
 
-            # Create a layout to hold the labels
-            item_info_layout = QHBoxLayout()
-            item_info_layout.addWidget(name_label)
-            item_info_layout.addWidget(amount_label)
-            item_info_layout.addWidget(unit_label)
-
-            item_layout.addWidget(container_widget)
-
-            # Add the container widget to the item layout
-            item_layout.addLayout(item_info_layout)
+            # Add the labels to the labels container
+            labels_layout.addWidget(name_label)
+            labels_layout.addWidget(amount_label)
+            labels_layout.addWidget(unit_label)
 
             # Create the delete button
-            delete_button = QPushButton("Excluir")
+            delete_button = QPushButton()
+            delete_button.setFixedSize(48, 48)
             delete_button.setStyleSheet(
-                "QPushButton { background-color: #F2F2F2; border-radius: 10px; }"
-                "QPushButton:hover { background-color: #BABABA; }"
+                "QPushButton {"
+                "   background-color: #42210B;"
+                "   border-radius: 20px;"
+                "}"
+                "QPushButton:hover {"
+                "   background-color: #dddddd;"
+                "}"
             )
+            # Load the trash icon for the button
+            delete_button_icon = QIcon("src/assets/icons/trash.png")
+            delete_button.setIcon(delete_button_icon)
+            delete_button.setIconSize(QSize(24, 24))
+            delete_button.setContentsMargins(0, 0, 0, 0)
             delete_button.clicked.connect(lambda: self.delete_item(item_widget))
 
+            # Add the labels container and the delete button to the main container layout
+            container_layout.addWidget(labels_container)
             container_layout.addWidget(delete_button)
+
+            # Add the container widget to the item layout
+            item_layout.addWidget(container_widget)
 
             # Add the item widget to the scroll layout
             self.scroll_layout.addWidget(item_widget)
@@ -202,7 +222,7 @@ class IngredientsDialog(QDialog):
         index = self.scroll_layout.indexOf(item_widget)
         if index != -1:
             # Remove the item from self.items
-            item = self.items.pop(index)
+            self.items.pop(index)
             # Remove the item widget from the scroll layout
             self.scroll_layout.removeWidget(item_widget)
             # Delete the item widget
