@@ -2,6 +2,8 @@ from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLa
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt
 
+from components.image_view_dialog import ImageViewDialog
+
 class PopupDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -108,5 +110,7 @@ class PopupDialog(QDialog):
         file_dialog.setNameFilter("Images (*.png *.xpm *.jpg *.bmp)")
         if file_dialog.exec_():
             file_path = file_dialog.selectedFiles()[0]
-            self.image_pixmap = QPixmap(file_path)
-            self.image_label.setPixmap(self.image_pixmap)
+ 
+            # Open a new dialog to display the selected image
+            image_dialog = ImageViewDialog(file_path)
+            image_dialog.exec_()

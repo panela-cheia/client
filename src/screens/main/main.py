@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setMinimumSize(1000, 600)
+        self.setMinimumSize(834, 656)
         self.setStyleSheet("background-color: #FFF;")
 
         # Cria o widget principal

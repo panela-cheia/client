@@ -58,7 +58,8 @@ class HomeWidget(QMainWindow):
 
         # Create a scroll area for the recipe posts
         scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
+        scroll_area.setFixedWidth(700)
+        #scroll_area.setWidgetResizable(True)
         scroll_area.setStyleSheet(
             "QScrollArea { background-color: #FFFFFF; border: none; }"
             "QScrollBar:vertical { background-color: #F2F2F2; width: 12px; margin: 0px; }"
