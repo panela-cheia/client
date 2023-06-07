@@ -2,7 +2,7 @@ from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLa
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt
 
-from components.image_view_dialog import ImageViewDialog
+from screens.main.components.image_view_dialog import ImageViewDialog
 
 class PopupDialog(QDialog):
     def __init__(self, parent=None):

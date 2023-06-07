@@ -1,9 +1,8 @@
 import sys
-from PySide2.QtWidgets import QApplication
-from screens.auth.auth import AuthWindow
+from app import App
+from infra.client.client import Client
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = AuthWindow()
-    window.show()
+    app = App(sys.argv)
+    app.Boostrap(client=Client())
     sys.exit(app.exec_())

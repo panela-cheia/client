@@ -2,10 +2,13 @@ from PySide2.QtWidgets import  QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushB
 from PySide2.QtGui import  QFontDatabase, QPixmap
 from PySide2.QtCore import Qt
 
+import json
+
 class SignupWindow(QWidget):
 
-    def __init__(self,main_window):
+    def __init__(self,main_window,app):
         super().__init__()
+        self.app = app
         self.setWindowTitle("SignIn")
         self.setMinimumSize(600, 600)
         self.setStyleSheet("background-color: #FFF;")
@@ -70,7 +73,7 @@ class SignupWindow(QWidget):
         # Botão "Entrar"
         login_button = QPushButton("Entrar", inputs_container)
         login_button.setStyleSheet("width: 100%; height: 53px; background-color: #D0956C; border-radius: 10px; font-family: 'Roboto Slab'; font-style: normal; font-weight: 700; font-size: 14px; color: #FFFFFF;")
-        login_button.clicked.connect(lambda: self.login(name=name_input.text(), username=username_input.text(),email=email_input.text(),password=password_input.text()))
+        login_button.clicked.connect(lambda: self.submit(name=name_input.text(), username=username_input.text(),email=email_input.text(),password=password_input.text()))
         inputs_layout.addWidget(login_button)
 
         right_layout.addWidget(inputs_container)
@@ -123,11 +126,31 @@ class SignupWindow(QWidget):
 
         layout.addWidget(left_container, 1)
 
-    def login(self, name,username,email, password):
-        print("Name:", name)
-        print("Username:", username)
-        print("Email:", email)
-        print("Senha:", password)
+    def submit(self, name,username,email, password):
+        message = {
+            "topic": "@user/create_user",
+            "body": {
+                "name": name,
+                "username": username,
+                "email": email,
+                "password": password
+            }
+        }
+
+        # Verifique se há uma conexão aberta antes de fechá-la
+        if self.app.client.tcp.getsockname() is not None:
+            self.app.client.tcp.close()
+        else:
+            self.app.client.tcp.connect(self.app.client.dest)
+
+        message = json.dumps(message)
+        self.app.client.send(message=message)
+        message = self.app.client.read()
+       
+        if not message:
+            return None
+        else:
+            self.openSignIn()
 
     def openSignIn(self):
         self.main_window.showSignIn()

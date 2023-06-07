@@ -2,9 +2,12 @@ from PySide2.QtWidgets import QMainWindow, QStackedWidget
 from screens.auth.signin.signin import SigninWindow
 from screens.auth.signup.signup import SignupWindow
 
+from PySide2.QtGui import QIcon
+
 class AuthWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self,app):
         super().__init__()
+        self.app = app
 
         self.setWindowTitle("Auth")
 
@@ -12,9 +15,13 @@ class AuthWindow(QMainWindow):
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
 
+        icon = QIcon("src/assets/images/logo.png")
+        self.setWindowIcon(icon)
+
+
         # Cria as telas e as adiciona ao QStackedWidget
-        self.signin_window = SigninWindow(self)
-        self.signup_window = SignupWindow(self)
+        self.signin_window = SigninWindow(self,app=app)
+        self.signup_window = SignupWindow(self,app=app)
         self.stacked_widget.addWidget(self.signin_window)
         self.stacked_widget.addWidget(self.signup_window)
 

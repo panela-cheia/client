@@ -2,7 +2,7 @@ from PySide2.QtWidgets import QApplication, QDialog, QLabel, QLineEdit, QComboBo
 from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt
 
-from components.ingredients_dialog import IngredientsDialog
+from screens.main.components.ingredients_dialog import IngredientsDialog
 
 class ImageViewDialog(QDialog):
     def __init__(self, image_path):

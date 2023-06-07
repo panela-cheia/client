@@ -3,7 +3,7 @@ from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt
 
 
-from components.popup_dialog import PopupDialog
+from screens.main.components.popup_dialog import PopupDialog
 
 class HomeWidget(QMainWindow):
     def __init__(self):

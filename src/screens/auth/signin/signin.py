@@ -5,8 +5,9 @@ from PySide2.QtCore import Qt
 
 
 class SigninWindow(QWidget):
-    def __init__(self,main_window):
+    def __init__(self,main_window,app):
         super().__init__()
+        self.app = app
         self.setWindowTitle("SignUp")
         self.setMinimumSize(600, 600)
         self.setStyleSheet("background-color: #FFF;")
@@ -113,8 +114,7 @@ class SigninWindow(QWidget):
         layout.addWidget(right_container, 1)
 
     def login(self, email, password):
-        print("Email:", email)
-        print("Senha:", password)
+        self.app.login(email=email,password=password)
 
     def openSignUp(self):
         self.main_window.showSignUp()

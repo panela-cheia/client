@@ -2,12 +2,12 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayou
 from PySide2.QtGui import QPixmap, QFontDatabase, QIcon
 from PySide2.QtCore import Qt
 
-from widgets.home import HomeWidget
-from widgets.dive import DiveWidget
-from widgets.search import SearchWidget
-from widgets.barn import BarnWidget
-from widgets.container import WidgetContainer
-from widgets.profile import ProfileWidget
+from screens.main.widgets.home import HomeWidget
+from screens.main.widgets.dive import DiveWidget
+from screens.main.widgets.search import SearchWidget
+from screens.main.widgets.barn import BarnWidget
+from screens.main.widgets.container import WidgetContainer
+from screens.main.widgets.profile import ProfileWidget
 
 anchors = [
     {
@@ -33,11 +33,14 @@ anchors = [
 ]
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self,app):
         super().__init__()
+        self.app = app
 
         self.setMinimumSize(834, 656)
         self.setStyleSheet("background-color: #FFF;")
+
+        print(self.app.user)
 
         # Cria o widget principal
         main_widget = QWidget()

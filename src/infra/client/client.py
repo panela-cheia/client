@@ -1,7 +1,12 @@
 import socket
 import json
 
-from messages import aux16
+
+aux16 = {
+    "topic": "@recipe/list_recipe",
+    "body": {
+    }
+}
 
 class Client:
     def __init__(self) -> None:
