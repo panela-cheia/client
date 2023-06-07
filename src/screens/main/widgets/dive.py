@@ -3,6 +3,8 @@ from PySide2.QtCore import Qt
 from PySide2.QtGui import QFont, QColor, QPainter, QBrush, QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSpacerItem, QSizePolicy, QScrollArea
 
+from components.popup_dive import PopupDive
+
 json_data = {
     "dives": [
     {
@@ -10,6 +12,7 @@ json_data = {
         "name": "Macarronada",
         "description": "comunidade da galera que gosta de macarronada",
         "members": "3",
+        "recipes": "2",
         "photo": None
     },
     {
@@ -17,6 +20,7 @@ json_data = {
         "name": "Colherada",
         "description": "teste",
         "members": "3",
+        "recipes": "2",
         "photo": None
     },
     {
@@ -24,6 +28,7 @@ json_data = {
         "name": "Macarronada",
         "description": "comunidade da galera que gosta de macarronada",
         "members": "3",
+        "recipes": "2",
         "photo": None
     },
     {
@@ -31,6 +36,7 @@ json_data = {
         "name": "Colherada",
         "description": "teste",
         "members": "3",
+        "recipes": "2",
         "photo": None
     },
     {
@@ -38,6 +44,7 @@ json_data = {
         "name": "Macarronada",
         "description": "comunidade da galera que gosta de macarronada",
         "members": "3",
+        "recipes": "2",
         "photo": None
     },
     {
@@ -45,6 +52,7 @@ json_data = {
         "name": "Colherada",
         "description": "teste",
         "members": "3",
+        "recipes": "2",
         "photo": None
     }]
 }
@@ -84,6 +92,10 @@ class DiveWidget(QWidget):
             "QPushButton { background-color: #42210B; border-radius: 10px; }"
             "QPushButton:hover { background-color: #432818; }"
         )
+        add_button.clicked.connect(
+            lambda: self.show_popup()
+        )
+        
         title_layout.addWidget(add_button)
         main_layout.addLayout(title_layout)
         # Scroll area para os grupos
@@ -180,7 +192,7 @@ class DiveWidget(QWidget):
                 "font-weight: bold;"
                 "font-family: 'Roboto Slab';"
                 "font-size: 10px;"
-                "color: #341A0F;"
+                "color: #D0946B;"
                 "border: none"
             )
             bottom_left_number_label = QLabel(dives["members"])
@@ -203,11 +215,11 @@ class DiveWidget(QWidget):
                 "font-weight: bold;"
                 "font-family: 'Roboto Slab';"
                 "font-size: 10px;"
-                "color: #341A0F;"
+                "color: #D0946B;"
                 "border: none;"
             )
 
-            bottom_right_number_label = QLabel("2")
+            bottom_right_number_label = QLabel(dives["recipes"])
             bottom_right_number_label.setStyleSheet(
                 "font-weight: bold;"
                 "font-family: 'Roboto Slab';"
@@ -232,3 +244,7 @@ class DiveWidget(QWidget):
         # Adicionando um spacer item para ajustar o espaçamento
         spacer_item = QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         title_layout.addItem(spacer_item)
+    
+    def show_popup(self):
+        popup = PopupDive()
+        popup.exec_()
