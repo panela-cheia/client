@@ -3,7 +3,7 @@ from PySide2.QtCore import Qt
 from PySide2.QtGui import QFont, QColor, QPainter, QBrush, QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSpacerItem, QSizePolicy, QScrollArea
 
-from components.popup_dive import PopupDive
+from screens.main.components.popup_dive import PopupDive
 
 json_data = {
     "dives": [

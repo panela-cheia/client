@@ -48,10 +48,14 @@ class App(QApplication):
         if not message:
             return None
         else:
-            data = json.loads(message)
 
-            self.login_state = True
-            self.user = data
+            if "error" in message:
+                print("deu ruin!")
+            else:
+                data = json.loads(message)
 
-            self.auth_window.close()
-            self.show_main_window()
+                self.login_state = True
+                self.user = data
+
+                self.auth_window.close()
+                self.show_main_window()
