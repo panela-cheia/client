@@ -9,8 +9,7 @@ aux16 = {
 
 class Client:
     def __init__(self) -> None:
-       # self.SERVER = '127.0.0.1'
-        self.SERVER = '172.18.0.1'
+        self.SERVER = '127.0.0.1'
         self.PORT = 3031
         self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.dest = (self.SERVER, self.PORT)
