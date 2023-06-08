@@ -309,21 +309,3 @@ class HomeWidget(QMainWindow):
         popup = PopupDialog(self)
         popup.exec_()
 
-
-class ReactionWidget(QWidget):
-    def __init__(self):
-        super().__init__()
-
-        # Exemplo de reações
-        reaction_label_1 = QLabel("Reação 1")
-        reaction_label_2 = QLabel("Reação 2")
-        reaction_label_3 = QLabel("Reação 3")
-
-        # Layout para as reações
-        reaction_layout = QHBoxLayout()
-        reaction_layout.addWidget(reaction_label_1)
-        reaction_layout.addWidget(reaction_label_2)
-        reaction_layout.addWidget(reaction_label_3)
-
-        self.setLayout(reaction_layout)
-

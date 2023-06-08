@@ -8,13 +8,14 @@ from screens.main.main import MainWindow
 
 from screens.shared.errors.error_dialog import ErrorDialog
 
-
 class App(QApplication):
     def __init__(self, argv):
         super().__init__(argv)
         self.client = None # Instancie o cliente de socket aqui
         self.login_state = False  # Estado de autenticação inicial
         self.user = None
+
+        QApplication.instance().aboutToQuit.connect(self.finish)
 
     def show_auth_window(self):
         self.auth_window = AuthWindow(self)
@@ -26,11 +27,16 @@ class App(QApplication):
 
     def Boostrap(self,client:Client):
         self.client = client
+        self.client.connect()
 
         if self.login_state:
             self.show_main_window()
         else:
             self.show_auth_window()
+
+    def finish(self):
+        print("até logo")
+        self.client.close()
 
     def login(self,email,password):
         message = {
@@ -41,13 +47,10 @@ class App(QApplication):
             }
         }
 
-        
-        self.client.tcp.connect(self.client.dest)
-        
         message = json.dumps(message)
         self.client.send(message=message)
         message = self.client.read()
-       
+
         if not message:
             return None
         else:
