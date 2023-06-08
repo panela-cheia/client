@@ -1,7 +1,6 @@
 import socket
 import json
 
-
 aux16 = {
     "topic": "@recipe/list_recipe",
     "body": {
@@ -33,6 +32,12 @@ class Client:
             else:
                 message += str(msg.decode())
         return message
+    
+    def connect(self):
+        self.tcp.connect(self.dest)
+
+    def close(self):
+        self.tcp.close()
 
     def test(self):
         self.tcp.connect(self.dest)
