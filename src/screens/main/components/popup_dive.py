@@ -185,7 +185,7 @@ class PopupDive(QDialog):
         
         image_label = QLabel()
         # Colocar um ícone da hora aqui
-        image_pixmap = QPixmap("src/assets/images/logo-2.png")
+        image_pixmap = QPixmap("src/assets/images/rd_cheers.png")
         image_label.setPixmap(image_pixmap)
         success_popup_layout.addWidget(image_label, alignment=Qt.AlignCenter)
         
@@ -207,7 +207,10 @@ class PopupDive(QDialog):
         file_dialog = QFileDialog()
         file_dialog.setFileMode(QFileDialog.ExistingFile)
         file_dialog.setNameFilter("Images (*.png *.xpm *.jpg *.bmp)")
+        
         if file_dialog.exec_():
             file_path = file_dialog.selectedFiles()[0]
             self.image_pixmap = QPixmap(file_path)
+            self.image_pixmap = self.image_pixmap.scaled(100, 100, Qt.KeepAspectRatio)
+            
             self.image_label.setPixmap(self.image_pixmap)
