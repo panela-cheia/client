@@ -1,10 +1,13 @@
 from PySide2.QtWidgets import QApplication
+import json
+
 
 from infra.client.client import Client
 from screens.auth.auth import AuthWindow
 from screens.main.main import MainWindow
 
-import json
+from screens.shared.errors.error_dialog import ErrorDialog
+
 
 class App(QApplication):
     def __init__(self, argv):
@@ -50,7 +53,8 @@ class App(QApplication):
         else:
 
             if "error" in message:
-                print("deu ruin!")
+                error_dialog = ErrorDialog()
+                error_dialog.exec_()
             else:
                 data = json.loads(message)
 
