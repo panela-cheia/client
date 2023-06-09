@@ -5,9 +5,13 @@ from PySide2.QtWidgets import (
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt,QSize
 
+import json
+
 class IngredientsDialog(QDialog):
-    def __init__(self, name, description, dive, image_path):
+    def __init__(self, app ,name, description, dive, image_path):
         super().__init__()
+        self.app = app
+
         self.setWindowTitle("Ingredients")
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
         self.setStyleSheet(
@@ -79,11 +83,27 @@ class IngredientsDialog(QDialog):
         self.amount_input = QLineEdit()
         self.amount_input.setPlaceholderText("Quantidade")
 
+
+        message = {
+            "topic": "@ingredients_unit/list_ingredients_unit",
+            "body": {
+            
+            }
+        }
+
+        message = json.dumps(message)
+        self.app.client.send(message=message)
+        message = self.app.client.read()
+
+        units = json.loads(message)
+
         # Create the select field
         self.unit_combobox = QComboBox()
-        self.unit_combobox.addItem("Unidade(s)")
-        self.unit_combobox.addItem("Unidade 2")
-        self.unit_combobox.addItem("Unidade 3")
+        self.unit_combobox.addItem("")
+
+        for unit in units:
+            self.unit_combobox.addItem(unit["name"])
+        
 
         # Create the add button
         add_button = QPushButton("Adicionar")
@@ -229,13 +249,22 @@ class IngredientsDialog(QDialog):
             item_widget.deleteLater()
 
     def submit(self, name, description, dive, image_path):
-        data = {
-            "name": name,
-            "description": description,
-            "dive": dive,
-            "userId": "75621072-e6b5-49ae-a5ff-424707d534b2",
-            "fileId": image_path,
-            "ingredients": self.items
+        message = {
+            "topic": "@recipe/create_recipe",
+            "body": {
+                "name": name,
+                "description": description,
+                "diveId": dive,
+                "userId": self.app.user["user"]["id"],
+                "fileId": "9ca8bf00-8a55-4d47-93ed-36659d424567",
+                "ingredients": self.items
+            }
         }
 
-        print(data)
+        message = json.dumps(message)
+        self.app.client.send(message=message)
+        message = self.app.client.read()
+
+        print(message)
+
+        self.close()

@@ -4,9 +4,27 @@ from PySide2.QtCore import Qt
 
 from screens.main.components.ingredients_dialog import IngredientsDialog
 
+import json
+
 class ImageViewDialog(QDialog):
-    def __init__(self, image_path):
+    def __init__(self,app, image_path):
         super().__init__()
+        self.app = app
+
+        message = {
+            "topic": "@dive/users_dive",
+            "body": {
+                "user_id": self.app.user["user"]["id"],
+            }
+        }
+
+        message = json.dumps(message)
+        self.app.client.send(message=message)
+        message = self.app.client.read()
+
+        self.data = json.loads(message)
+
+
         self.setWindowTitle("Imagem Selecionada")
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
         self.setStyleSheet(
@@ -111,9 +129,10 @@ class ImageViewDialog(QDialog):
         category_label.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
         category_combobox = QComboBox()
         category_combobox.addItem("")
-        category_combobox.addItem("Buteco 1")
-        category_combobox.addItem("Buteco 2")
-        category_combobox.addItem("Buteco 3")
+
+        for dive in self.data:
+            category_combobox.addItem(dive["name"])
+        
         form_container_layout.addRow(category_label, category_combobox)
 
         # Add the form container to the content layout
@@ -173,9 +192,17 @@ class ImageViewDialog(QDialog):
         main_layout.addWidget(content_frame)
 
     def save_recipe(self, name, description, dive, image_path):
+        
+        final_dive = None if self.find_object_by_name(name=dive) == None else self.find_object_by_name(name=dive)["id"]
 
         # Open a new dialog to display the selected image
-        ingredients_dialog = IngredientsDialog(name=name,description=description,dive=dive,image_path=image_path)
+        ingredients_dialog = IngredientsDialog(app=self.app,name=name,description=description,dive=final_dive,image_path=image_path)
         ingredients_dialog.exec_()
 
         self.close()
+
+    def find_object_by_name(self,name):
+        for obj in self.data:
+            if obj["name"] == name:
+                return obj
+        return None

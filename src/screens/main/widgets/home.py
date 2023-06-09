@@ -126,7 +126,7 @@ class HomeWidget(QMainWindow):
         self.setCentralWidget(central_widget)
 
     def show_popup(self):
-        popup = PopupDialog(self)
+        popup = PopupDialog(parent=self,app=self.app)
         popup.exec_()
 
     def react(self,recipe_id,type):

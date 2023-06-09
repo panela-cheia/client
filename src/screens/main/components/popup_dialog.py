@@ -5,8 +5,9 @@ from PySide2.QtCore import Qt
 from screens.main.components.image_view_dialog import ImageViewDialog
 
 class PopupDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, app ,parent=None):
         super().__init__(parent)
+        self.app = app
         self.setWindowTitle("Search")
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
         self.setStyleSheet(
@@ -112,5 +113,5 @@ class PopupDialog(QDialog):
             file_path = file_dialog.selectedFiles()[0]
  
             # Open a new dialog to display the selected image
-            image_dialog = ImageViewDialog(file_path)
+            image_dialog = ImageViewDialog(app=self.app,image_path=file_path)
             image_dialog.exec_()
