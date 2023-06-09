@@ -87,8 +87,9 @@ recipe_data = {
 }
 
 class ProfileWidget(QWidget):
-    def __init__(self):
+    def __init__(self,app):
         super().__init__()
+        self.app = app
 
         # First container: User profile picture and information
         profile_picture = QLabel()

@@ -13,22 +13,22 @@ anchors = [
     {
         "label": "Home",
         "icon": "icons/home.png",
-        "widget": HomeWidget
+        "widget": "HomeWidget"
     },
     {
         "label": "Butecos",
         "icon": "icons/dive.png",
-        "widget": DiveWidget
+        "widget": "DiveWidget"
     },
     {
         "label": "Pesquisar",
         "icon": "icons/search.png",
-        "widget": SearchWidget
+        "widget": "SearchWidget"
     },
     {
         "label": "Armazém",
         "icon": "icons/barn.png",
-        "widget": BarnWidget
+        "widget": "BarnWidget"
     }
 ]
 
@@ -188,7 +188,7 @@ class MainWindow(QMainWindow):
             "QPushButton { background-color: transparent; border: none; }"
             "QPushButton:hover { background-color: #FFFFFF; }"
         )
-        profile_button.clicked.connect(lambda: self.switch_widget(ProfileWidget))
+        profile_button.clicked.connect(lambda: self.switch_widget("ProfileWidget"))
 
         # Adiciona os containers ao sidebar layout
         sidebar_layout.addWidget(logo_container)
@@ -210,7 +210,7 @@ class MainWindow(QMainWindow):
         self.container_main = WidgetContainer()
         self.container_main.setStyleSheet("background-color: #FFFFFF;")
         main_layout.addWidget(self.container_main)
-        self.container_main.set_widget(HomeWidget())
+        self.container_main.set_widget(HomeWidget(app=self.app))
 
         # Define o widget principal como central widget da janela
         self.setCentralWidget(main_widget)
@@ -223,9 +223,22 @@ class MainWindow(QMainWindow):
         self.container_main.setMinimumWidth(container_main_width)
 
     def switch_widget(self, widget_class):
-        if widget_class:
-            widget = widget_class()
-            self.container_main.set_widget(widget)
+        if widget_class == "HomeWidget":
+            widget = HomeWidget(app=self.app)
+
+        elif widget_class == "DiveWidget":
+            widget = DiveWidget(app=self.app)
+
+        elif widget_class == "SearchWidget":
+            widget = SearchWidget(app=self.app)
+
+        elif widget_class == "BarnWidget":
+            widget = BarnWidget(app=self.app)
+            
+        elif widget_class == "ProfileWidget":
+            widget = ProfileWidget(app=self.app)
+
+        self.container_main.set_widget(widget)
 
 if __name__ == "__main__":
     app = QApplication([])

@@ -66,8 +66,9 @@ json_data = {
 
 
 class SearchWidget(QWidget):
-    def __init__(self):
+    def __init__(self,app):
         super().__init__()
+        self.app = app
 
         # Create the main layout
         layout = QVBoxLayout()
