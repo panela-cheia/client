@@ -88,8 +88,9 @@ recipe_data = {
 
 
 class BarnWidget(QWidget):
-    def __init__(self):
+    def __init__(self,app):
         super().__init__()
+        self.app = app
 
         # Create the main layout
         layout = QVBoxLayout()

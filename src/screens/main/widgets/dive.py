@@ -58,8 +58,9 @@ json_data = {
 }
 
 class DiveWidget(QWidget):
-    def __init__(self):
+    def __init__(self,app):
         super().__init__()
+        self.app = app
 
         # Configuração do layout principal
         main_layout = QVBoxLayout()
