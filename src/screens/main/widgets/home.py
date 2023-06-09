@@ -144,6 +144,3 @@ class HomeWidget(QMainWindow):
         message = self.app.client.read()
 
         print(message)
-        
-
-        print("aaaaaa")
