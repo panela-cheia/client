@@ -3,8 +3,9 @@ from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt
 
 class PopupDive(QDialog):
-    def __init__(self):
+    def __init__(self,handle_create_dive):
         super().__init__()
+        self.handle_create_dive = handle_create_dive
 
         self.setWindowTitle("Criar Buteco")
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
@@ -163,60 +164,68 @@ class PopupDive(QDialog):
             QMessageBox.warning(self, "Aviso!", "Por favor, selecione uma foto pro buteco.")
             return
         
-        # Exibir o segundo popup com a mensagem de sucesso
-        success_popup = QDialog()
-        success_popup.setWindowTitle("Buteco Criado")
-        success_popup.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
-        success_popup.setStyleSheet(
-            "QDialog {"
-            "   background: #FFFFFF;"
-            "   border: 1px solid #EEEEEE;"
-            "}"
-            "QLabel {"
-            "   color: #341A0F;"
-            "   padding: 10px 0;"
-            "}"
-            "QFrame#header {"
-            "   border-bottom: 2px solid #EEEEEE;"
-            "}"
-            "QFrame#content {"
-            "   padding: 20px;"
-            "}"
-        )
-        success_popup.setFixedSize(400, 400)
-        success_popup_layout = QVBoxLayout()
-        
-        close_button = QPushButton()
-        close_button.setFixedSize(35, 35)
-        close_button.setStyleSheet(
-            "QPushButton { background-color: #F2F2F2; border-radius: 10px; }"
-            "QPushButton:hover { background-color: #BABABA; }"
-        )
-        # Load the image for the close button
-        close_button_icon = QIcon("src/assets/icons/x.png")
-        close_button.setIcon(close_button_icon)
-        close_button.clicked.connect(success_popup.close)
-        success_popup_layout.addWidget(close_button, alignment=Qt.AlignRight)
-        
-        image_label = QLabel()
-        # Colocar um ícone da hora aqui
-        image_pixmap = QPixmap("src/assets/images/rd_cheers.png")
-        image_label.setPixmap(image_pixmap)
-        success_popup_layout.addWidget(image_label, alignment=Qt.AlignCenter)
-        
-        success_message = QLabel("Buteco criado com sucesso!")
-        success_message.setStyleSheet(
-            "font-family: 'Roboto Slab';"
-            "font-style: normal;"
-            "font-weight: 500;"
-            "font-size: 12px;"
-            "line-height: 16px;"
-            "color: #341A0F;"
-            "border: none;"
-        )
-        success_popup_layout.addWidget(success_message, alignment=Qt.AlignCenter)
-        success_popup.setLayout(success_popup_layout)
-        success_popup.exec_()
+        try:    
+            message = self.handle_create_dive(name=self.name_input.text(),description=self.description_input.text())
+
+            if "ok" in message:
+                # Exibir o segundo popup com a mensagem de sucesso
+                success_popup = QDialog()
+                success_popup.setWindowTitle("Buteco Criado")
+                success_popup.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
+                success_popup.setStyleSheet(
+                    "QDialog {"
+                    "   background: #FFFFFF;"
+                    "   border: 1px solid #EEEEEE;"
+                    "}"
+                    "QLabel {"
+                    "   color: #341A0F;"
+                    "   padding: 10px 0;"
+                    "}"
+                    "QFrame#header {"
+                    "   border-bottom: 2px solid #EEEEEE;"
+                    "}"
+                    "QFrame#content {"
+                    "   padding: 20px;"
+                    "}"
+                )
+                success_popup.setFixedSize(400, 400)
+                success_popup_layout = QVBoxLayout()
+                
+                close_button = QPushButton()
+                close_button.setFixedSize(35, 35)
+                close_button.setStyleSheet(
+                    "QPushButton { background-color: #F2F2F2; border-radius: 10px; }"
+                    "QPushButton:hover { background-color: #BABABA; }"
+                )
+                # Load the image for the close button
+                close_button_icon = QIcon("src/assets/icons/x.png")
+                close_button.setIcon(close_button_icon)
+                close_button.clicked.connect(success_popup.close)
+                success_popup_layout.addWidget(close_button, alignment=Qt.AlignRight)
+                
+                image_label = QLabel()
+                # Colocar um ícone da hora aqui
+                image_pixmap = QPixmap("src/assets/images/rd_cheers.png")
+                image_label.setPixmap(image_pixmap)
+                success_popup_layout.addWidget(image_label, alignment=Qt.AlignCenter)
+                
+                success_message = QLabel("Buteco criado com sucesso!")
+                success_message.setStyleSheet(
+                    "font-family: 'Roboto Slab';"
+                    "font-style: normal;"
+                    "font-weight: 500;"
+                    "font-size: 12px;"
+                    "line-height: 16px;"
+                    "color: #341A0F;"
+                    "border: none;"
+                )
+                success_popup_layout.addWidget(success_message, alignment=Qt.AlignCenter)
+                success_popup.setLayout(success_popup_layout)
+                success_popup.exec_()
+
+        except (ValueError):
+            print(ValueError)
+
     
     def dive_image(self):
         file_dialog = QFileDialog()

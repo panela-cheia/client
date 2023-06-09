@@ -82,7 +82,6 @@ class DiveWidget(QWidget):
         message = self.app.client.read()
 
         data = json.loads(message)
-        print(data)
 
         if len(data) > 0:
             for index, dive in enumerate(data):
@@ -100,5 +99,21 @@ class DiveWidget(QWidget):
         title_layout.addItem(spacer_item)
     
     def show_popup(self):
-        popup = PopupDive()
+        popup = PopupDive(handle_create_dive=self.handle_create_dive)
         popup.exec_()
+
+    def handle_create_dive(self,name,description):
+        message={
+            "topic": "@dive/create_dive",
+            "body": {
+                "name": name,
+                "description": description,
+                "fileId": "4a3dbb52-1076-4ef4-9c5e-306cf785091b",
+                "userId": self.app.user["user"]["id"]
+            }
+        }
+        message = json.dumps(message)
+        self.app.client.send(message=message)
+        message = self.app.client.read()
+
+        return message
