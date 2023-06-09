@@ -80,10 +80,14 @@ class SearchWidget(QWidget):
         result_layout.setContentsMargins(0, 0, 0, 24)  # Updated margin bottom
 
         # Create the icon
+        
+        '''
         if user["photo"]:
             icon_path = user["photo"]["path"]
         else:
-            icon_path = "src/assets/images/profile-1.png"
+        '''  
+
+        icon_path = "src/assets/images/profile-1.png"
         icon_label = QLabel()
         icon_label.setFixedSize(60, 60)
         icon_label.setStyleSheet("border-radius: 50%;")
@@ -125,11 +129,14 @@ class SearchWidget(QWidget):
         result_layout.setSpacing(24)
         result_layout.setContentsMargins(0, 0, 0, 24)  # Updated margin bottom
 
+        '''
         # Create the icon
         if bar["photo"]:
             icon_path = bar["photo"]["path"]
         else:
-            icon_path = "src/assets/images/buteco.png"
+        '''
+
+        icon_path = "src/assets/images/buteco.png"
         icon_label = QLabel()
         icon_label.setFixedSize(60, 60)
         icon_label.setStyleSheet("border-radius: 50%;")
@@ -210,9 +217,9 @@ class SearchWidget(QWidget):
         # Get the "dives" and "users" from the updated JSON data
         dives = self.data["dives"]
         users = self.data["users"]
-
+        
         # Add users
-        for user in enumerate(users):
+        for index,user in enumerate(users):
             self.addUserResult(new_results_layout, user)
 
         # Add a horizontal line
@@ -231,7 +238,7 @@ class SearchWidget(QWidget):
         new_results_layout.addWidget(butecos_label)
 
         # Add dives and horizontal separator
-        for dive in enumerate(dives):
+        for index,dive in enumerate(dives):
             self.addDiveResult(new_results_layout, dive)
 
         # Replace the results widget and layout with the new ones
