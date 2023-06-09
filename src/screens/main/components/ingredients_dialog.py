@@ -256,7 +256,7 @@ class IngredientsDialog(QDialog):
                 "description": description,
                 "diveId": dive,
                 "userId": self.app.user["user"]["id"],
-                "fileId": "9ca8bf00-8a55-4d47-93ed-36659d424567",
+                "fileId": image_path["id"],
                 "ingredients": self.items
             }
         }

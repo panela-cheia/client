@@ -1,11 +1,45 @@
+import os
+import json
+import base64
+
 from PySide2.QtWidgets import QFrame, QDialog, QMessageBox, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QSizePolicy
 from PySide2.QtGui import QIcon, QPixmap
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt,QThread,Signal
+
+from screens.shared.errors.error_dialog import ErrorDialog  
+
+class ImageUploadThread(QThread):
+    image_uploaded = Signal(str)  # Adicionado novo parâmetro para file_path
+
+    def __init__(self, file_path):
+        super().__init__()
+        self.file_path = file_path
+
+    def run(self):
+        name = os.path.basename(self.file_path)
+
+        with open(self.file_path, "rb") as file:
+            image_data = file.read()
+
+        # Codifica os dados da imagem em Base64
+        encoded_image_data = base64.b64encode(image_data).decode("utf-8")
+
+        message = {
+            "topic": "@file/create_file",
+            "body": {
+                "name": name,
+                "path": encoded_image_data
+            }
+        }
+
+        self.image_uploaded.emit(json.dumps(message))  # Emitir também o file_path
 
 class PopupDive(QDialog):
-    def __init__(self,handle_create_dive):
+    def __init__(self,app,handle_create_dive):
         super().__init__()
+        self.app = app
         self.handle_create_dive = handle_create_dive
+        self.file = None
 
         self.setWindowTitle("Criar Buteco")
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
@@ -62,8 +96,8 @@ class PopupDive(QDialog):
 
         # Create the content frame
         content_frame = QFrame(objectName="content")
-        content_layout = QVBoxLayout(content_frame)
-        content_layout.setContentsMargins(0, 0, 0, 0)
+        self.content_layout = QVBoxLayout(content_frame)
+        self.content_layout.setContentsMargins(0, 0, 0, 0)
         
         layout.addWidget(content_frame)
         
@@ -71,7 +105,7 @@ class PopupDive(QDialog):
         text_label = QLabel("Crie seu novo buteco")
         text_label.setStyleSheet("font-family: 'Roboto Slab';font-size: 20px;color: #341A0F;")
         text_label.setAlignment(Qt.AlignCenter)
-        content_layout.addWidget(text_label, alignment=Qt.AlignCenter)
+        self.content_layout.addWidget(text_label, alignment=Qt.AlignCenter)
         
         # Caixa de texto para o nome do buteco
         self.name_input = QLineEdit()
@@ -82,7 +116,7 @@ class PopupDive(QDialog):
             "padding: 10px;"
             "font-size: 16px;"
         )
-        content_layout.addWidget(self.name_input)
+        self.content_layout.addWidget(self.name_input)
 
         # Caixa de texto para a descrição do buteco
         self.description_input = QLineEdit()
@@ -93,7 +127,7 @@ class PopupDive(QDialog):
             "padding: 10px;"
             "font-size: 16px;"
         )
-        content_layout.addWidget(self.description_input)
+        self.content_layout.addWidget(self.description_input)
         
         self.profile_label = QLabel()
         self.profile_label.setAlignment(Qt.AlignCenter)
@@ -121,7 +155,10 @@ class PopupDive(QDialog):
             "}"
         )
         profile_photo.clicked.connect(self.dive_image)
-        content_layout.addWidget(profile_photo, alignment=Qt.AlignLeft)
+        self.content_layout.addWidget(profile_photo, alignment=Qt.AlignLeft)
+        
+        layout.addWidget(content_frame)
+
         
         # Botão personalizado para criar o buteco
         create_button = QPushButton("Criar Buteco")
@@ -145,7 +182,7 @@ class PopupDive(QDialog):
         )
         
         create_button.clicked.connect(self.create_buteco)
-        content_layout.addWidget(create_button, alignment=Qt.AlignCenter)
+        self.content_layout.addWidget(create_button, alignment=Qt.AlignCenter)
     
         self.setLayout(layout)
 
@@ -160,12 +197,12 @@ class PopupDive(QDialog):
             QMessageBox.warning(self, "Aviso!", "Por favor, insira uma descrição.")
             return
 
-        if self.profile_label.pixmap() is None:
+        if self.file is None:
             QMessageBox.warning(self, "Aviso!", "Por favor, selecione uma foto pro buteco.")
             return
         
         try:    
-            message = self.handle_create_dive(name=self.name_input.text(),description=self.description_input.text())
+            message = self.handle_create_dive(name=self.name_input.text(),description=self.description_input.text(),file=self.file)
 
             if "ok" in message:
                 # Exibir o segundo popup com a mensagem de sucesso
@@ -234,7 +271,34 @@ class PopupDive(QDialog):
         
         if file_dialog.exec_():
             file_path = file_dialog.selectedFiles()[0]
-            image_pixmap = QPixmap(file_path)
-            image_pixmap = image_pixmap.scaled(200, 200, aspectRatioMode=Qt.KeepAspectRatio)
             
-            self.profile_label.setPixmap(image_pixmap)
+            upload_thread = ImageUploadThread(file_path)
+            upload_thread.image_uploaded.connect(self.handle_image_upload)
+            upload_thread.start()
+
+    def handle_image_upload(self, message):
+        self.app.client.send(message=message)
+        response = self.app.client.read()
+        
+        file = json.loads(response)
+        self.file = file
+        
+        # Verifica se a imagem foi carregada com sucesso
+        if "path" in file:
+            encoded_image_data = file["path"]
+            image_data_decoded = base64.b64decode(encoded_image_data)
+        
+            # Cria o QLabel para exibir a imagem
+            image_label = QLabel()
+            image_pixmap = QPixmap()
+            image_pixmap.loadFromData(image_data_decoded)
+            
+            # Exibe a imagem
+            if not image_pixmap.isNull():
+                image_label.setPixmap(image_pixmap.scaledToWidth(256).scaledToHeight(256))
+            else:
+                error_dialog = ErrorDialog(additional_text="Imagem não carregada!")
+                error_dialog.exec_()
+                
+            # Adiciona o QLabel ao layout
+            self.content_layout.addWidget(image_label, alignment=Qt.AlignCenter)

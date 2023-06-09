@@ -5,6 +5,9 @@ from PySide2.QtCore import Qt
 from screens.main.components.ingredients_dialog import IngredientsDialog
 
 import json
+import base64
+
+from screens.shared.errors.error_dialog import ErrorDialog
 
 class ImageViewDialog(QDialog):
     def __init__(self,app, image_path):
@@ -89,10 +92,21 @@ class ImageViewDialog(QDialog):
         content_layout = QVBoxLayout(content_frame)
         content_layout.setContentsMargins(0, 0, 0, 0)
 
+        encoded_image_data = image_path["path"]
+        image_data_decoded = base64.b64decode(encoded_image_data)
+
         # Create the image label
         image_label = QLabel()
-        image_pixmap = QPixmap(image_path)
-        image_label.setPixmap(image_pixmap.scaledToWidth(256).scaledToHeight(256))
+        image_pixmap = QPixmap()
+        image_pixmap.loadFromData(image_data_decoded)
+        # image_pixmap = QPixmap(image_data_decoded)
+
+        # Exibe a imagem
+        if not image_pixmap.isNull():
+            image_label.setPixmap(image_pixmap.scaledToWidth(256).scaledToHeight(256))
+        else:
+            error_dialog = ErrorDialog(additional_text="Imagem não carregada!")
+            error_dialog.exec_()
 
         # Create the container for the image and close button
         image_container = QGroupBox(objectName="image_container")

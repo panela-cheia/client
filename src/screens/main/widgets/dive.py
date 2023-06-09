@@ -99,16 +99,16 @@ class DiveWidget(QWidget):
         title_layout.addItem(spacer_item)
     
     def show_popup(self):
-        popup = PopupDive(handle_create_dive=self.handle_create_dive)
+        popup = PopupDive(handle_create_dive=self.handle_create_dive,app=self.app)
         popup.exec_()
 
-    def handle_create_dive(self,name,description):
+    def handle_create_dive(self,name,description,file):
         message={
             "topic": "@dive/create_dive",
             "body": {
                 "name": name,
                 "description": description,
-                "fileId": "4a3dbb52-1076-4ef4-9c5e-306cf785091b",
+                "fileId": file["id"],
                 "userId": self.app.user["user"]["id"]
             }
         }

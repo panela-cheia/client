@@ -2,6 +2,9 @@ from PySide2.QtWidgets import QWidget, QDialog, QVBoxLayout, QHBoxLayout, QLabel
 from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt, QTimer
 
+import base64
+
+from screens.shared.errors.error_dialog import ErrorDialog
 
 
 class Recipe(QWidget):
@@ -155,21 +158,39 @@ class Recipe(QWidget):
         
 
         # Add the recipe photo (assuming you have the path to the image)
-        photo_path = "src/assets/images/recipe.png"
-        recipe_photo_label = QLabel()
-        recipe_photo_pixmap = QPixmap(photo_path)
-        recipe_photo_label.setFixedSize(589, 393)
-        recipe_photo_label.setPixmap(
-            recipe_photo_pixmap.scaled(
-                recipe_photo_label.size(),
-                Qt.AspectRatioMode.IgnoreAspectRatio,
-                Qt.TransformationMode.SmoothTransformation,
-            )
-        )
-        recipe_photo_label.setStyleSheet("border:none;")  # Remove border styling from the photo label
 
-        # Add the recipe photo label to the layout
-        layout_widget.addWidget(recipe_photo_label, alignment=Qt.AlignCenter)
+
+
+        encoded_image_data = self.data["photo"]["path"]
+        
+        if not encoded_image_data.startswith("localhost:3030/statics/"):
+            image_data_decoded = base64.b64decode(encoded_image_data)
+
+            recipe_photo_label = QLabel()
+            recipe_photo_pixmap = QPixmap()
+            recipe_photo_pixmap.loadFromData(image_data_decoded)
+            
+            recipe_photo_label.setFixedSize(589, 393)
+            recipe_photo_label.setPixmap(
+                recipe_photo_pixmap.scaled(
+                    recipe_photo_label.size(),
+                    Qt.AspectRatioMode.IgnoreAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
+                )
+            )
+
+            # Exibe a imagem
+            if not recipe_photo_pixmap.isNull():
+                recipe_photo_label.setPixmap(recipe_photo_pixmap.scaledToWidth(589).scaledToHeight(393))
+            else:
+                error_dialog = ErrorDialog(additional_text="Imagem não carregada!")
+                error_dialog.exec_()
+
+
+            recipe_photo_label.setStyleSheet("border:none;")  # Remove border styling from the photo label
+
+            # Add the recipe photo label to the layout
+            layout_widget.addWidget(recipe_photo_label, alignment=Qt.AlignCenter)
 
         reaction_layout = QHBoxLayout()
         reaction_layout.setSpacing(5)
