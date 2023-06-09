@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QFrame, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog
+from PySide2.QtWidgets import QFrame, QDialog, QMessageBox, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QSizePolicy
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt
 
@@ -94,6 +94,11 @@ class PopupDive(QDialog):
         )
         content_layout.addWidget(self.description_input)
         
+        self.profile_label = QLabel()
+        self.profile_label.setAlignment(Qt.AlignCenter)
+        self.profile_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        layout.addWidget(self.profile_label)
+        
         # Botão personalizado para criar o buteco
         profile_photo = QPushButton("Perfil do buteco")
         profile_photo.setStyleSheet(
@@ -137,17 +142,27 @@ class PopupDive(QDialog):
             "   background-color: #341A0F;"
             "}"
         )
-
+        
         create_button.clicked.connect(self.create_buteco)
         content_layout.addWidget(create_button, alignment=Qt.AlignCenter)
-        
+    
         self.setLayout(layout)
 
     def create_buteco(self):
-        # Lógica para criar o buteco com os dados inseridos nas caixas de texto
-        name = self.name_input.text()
-        description = self.description_input.text()
+        
+        # Tratamento de erro para caso algum campo fique vazio
+        if self.name_input.text().strip() == "":
+            QMessageBox.warning(self, "Aviso!", "Por favor, insira um nome.")
+            return
 
+        if self.description_input.text().strip() == "":
+            QMessageBox.warning(self, "Aviso!", "Por favor, insira uma descrição.")
+            return
+
+        if self.profile_label.pixmap() is None:
+            QMessageBox.warning(self, "Aviso!", "Por favor, selecione uma foto pro buteco.")
+            return
+        
         # Exibir o segundo popup com a mensagem de sucesso
         success_popup = QDialog()
         success_popup.setWindowTitle("Buteco Criado")
@@ -207,7 +222,10 @@ class PopupDive(QDialog):
         file_dialog = QFileDialog()
         file_dialog.setFileMode(QFileDialog.ExistingFile)
         file_dialog.setNameFilter("Images (*.png *.xpm *.jpg *.bmp)")
+        
         if file_dialog.exec_():
             file_path = file_dialog.selectedFiles()[0]
-            self.image_pixmap = QPixmap(file_path)
-            self.image_label.setPixmap(self.image_pixmap)
+            image_pixmap = QPixmap(file_path)
+            image_pixmap = image_pixmap.scaled(200, 200, aspectRatioMode=Qt.KeepAspectRatio)
+            
+            self.profile_label.setPixmap(image_pixmap)
