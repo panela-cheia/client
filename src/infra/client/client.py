@@ -7,10 +7,12 @@ aux16 = {
     }
 }
 
+from config.app_url import HOST,PORT
+
 class Client:
     def __init__(self) -> None:
-        self.SERVER = '127.0.0.1'
-        self.PORT = 3032
+        self.SERVER = HOST
+        self.PORT = PORT
         self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.dest = (self.SERVER, self.PORT)
 
