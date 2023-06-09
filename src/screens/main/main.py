@@ -40,8 +40,6 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(834, 656)
         self.setStyleSheet("background-color: #FFF;")
 
-        print(self.app.user)
-
         # Cria o widget principal
         main_widget = QWidget()
         main_layout = QHBoxLayout()

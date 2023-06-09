@@ -1,61 +1,10 @@
-import sys
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QFont, QColor, QPainter, QBrush, QIcon, QPixmap
-from PySide2.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSpacerItem, QSizePolicy, QScrollArea
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSpacerItem, QSizePolicy, QScrollArea
 
 from screens.main.components.popup_dive import PopupDive
+from screens.main.components.dive_component import DiveComponent
 
-json_data = {
-    "dives": [
-    {
-        "id": "4ebc6c64-7f1b-41f4-90e5-47c5e1456920",
-        "name": "Macarronada",
-        "description": "comunidade da galera que gosta de macarronada",
-        "members": "3",
-        "recipes": "2",
-        "photo": None
-    },
-    {
-        "id": "b9339c14-daba-4cc9-b736-50ac8da36d88",
-        "name": "Colherada",
-        "description": "teste",
-        "members": "3",
-        "recipes": "2",
-        "photo": None
-    },
-    {
-        "id": "4ebc6c64-7f1b-41f4-90e5-47c5e1456920",
-        "name": "Macarronada",
-        "description": "comunidade da galera que gosta de macarronada",
-        "members": "3",
-        "recipes": "2",
-        "photo": None
-    },
-    {
-        "id": "b9339c14-daba-4cc9-b736-50ac8da36d88",
-        "name": "Colherada",
-        "description": "teste",
-        "members": "3",
-        "recipes": "2",
-        "photo": None
-    },
-    {
-        "id": "4ebc6c64-7f1b-41f4-90e5-47c5e1456920",
-        "name": "Macarronada",
-        "description": "comunidade da galera que gosta de macarronada",
-        "members": "3",
-        "recipes": "2",
-        "photo": None
-    },
-    {
-        "id": "b9339c14-daba-4cc9-b736-50ac8da36d88",
-        "name": "Colherada",
-        "description": "teste",
-        "members": "3",
-        "recipes": "2",
-        "photo": None
-    }]
-}
+import json
 
 class DiveWidget(QWidget):
     def __init__(self,app):
@@ -121,126 +70,30 @@ class DiveWidget(QWidget):
         max_dives_per_row = 2
         row_layout = None
     
-        dives = json_data["dives"]
+        message = {
+            "topic": "@dive/users_dive",
+            "body": {
+                "user_id": self.app.user["user"]["id"],
+            }
+        }
 
-        for i, dives in enumerate(json_data["dives"]):
-            if i % max_dives_per_row == 0:
-                row_layout = QHBoxLayout()
-                feed_container_layout.addLayout(row_layout)
+        message = json.dumps(message)
+        self.app.client.send(message=message)
+        message = self.app.client.read()
 
-            # Create the post container
-            post_container = QFrame()
-            post_container.setFixedSize(200, 320)
-            post_container.setStyleSheet(
-                "QFrame { background: #FFFFFF; border: 2px solid #F2F2F2; border-radius: 16px; padding: 11px 16px; }"
-            )
-            # post_container.setMinimumSize(100, 100)
+        data = json.loads(message)
+        print(data)
 
-            layout = QVBoxLayout(post_container)
-            # layout.setContentsMargins(0, 0, 0, 0)
-            layout.setSizeConstraint(QVBoxLayout.SetMinimumSize)  # Set the size constraint
-            layout.setAlignment(Qt.AlignCenter)  # Center-align the contents of the layout
+        if len(data) > 0:
+            for index, dive in enumerate(data):
+                if index % max_dives_per_row == 0:
+                    row_layout = QHBoxLayout()
+                    feed_container_layout.addLayout(row_layout)
 
-            # Create the recipe name label
-            dive_name_label = QLabel(dives["name"])
-            dive_name_label.setStyleSheet(
-                "font-family: 'Roboto Slab';"
-                "font-style: normal;"
-                "font-weight: 700;"
-                "font-size: 24px;"
-                "color: #341A0F;"
-                "border: none;"
-            )
+                dive_component = DiveComponent(dive)
+                row_layout.addWidget(dive_component)
 
-            dive_description_label = QLabel(dives["description"])
-            dive_description_label.setStyleSheet(
-                "font-family: 'Roboto Slab';"
-                "font-style: normal;"
-                "font-size: 18px;"
-                "color: #341A0F;"
-                "border: none;"
-            )
-
-            max_text_length = 14
-
-            # Verificando se o texto excede o tamanho máximo
-            if len(dives["description"]) > max_text_length:
-                truncated_text = dive_description_label.text()[:max_text_length] + "..."
-                dive_description_label.setToolTip(dives["description"])  # Configurar tooltip com o texto completo
-            else:
-                truncated_text = dive_description_label.text()
-
-            dive_description_label.setText(truncated_text)
-
-            # Configurando a dica de ferramenta para exibir o texto completo
-            dive_description_label.setMouseTracking(True)
-
-            text_container = QVBoxLayout()
-            text_container.setSpacing(5)
-            text_container.addWidget(dive_name_label)
-            text_container.addWidget(dive_description_label)
-
-            # Add the text container to the layout
-            layout.addLayout(text_container)
-
-            bottom_text_container = QHBoxLayout()
-
-            bottom_left_layout = QVBoxLayout()
-            bottom_left_layout.setSpacing(0)
-
-            members_title_label = QLabel("Membros")
-            members_title_label.setStyleSheet(
-                "font-weight: bold;"
-                "font-family: 'Roboto Slab';"
-                "font-size: 10px;"
-                "color: #D0946B;"
-                "border: none"
-            )
-            bottom_left_number_label = QLabel(dives["members"])
-            bottom_left_number_label.setStyleSheet(
-                "font-weight: bold;"
-                "font-family: 'Roboto Slab';"
-                "font-size: 10px;"
-                "color: #341A0F;"
-                "border: none;"
-            )
-
-            bottom_left_layout.addWidget(members_title_label)
-            bottom_left_layout.addWidget(bottom_left_number_label)
-
-            bottom_right_layout = QVBoxLayout()
-            bottom_right_layout.setSpacing(0)
-
-            post_title_label = QLabel("Publicações")            
-            post_title_label.setStyleSheet(
-                "font-weight: bold;"
-                "font-family: 'Roboto Slab';"
-                "font-size: 10px;"
-                "color: #D0946B;"
-                "border: none;"
-            )
-
-            bottom_right_number_label = QLabel(dives["recipes"])
-            bottom_right_number_label.setStyleSheet(
-                "font-weight: bold;"
-                "font-family: 'Roboto Slab';"
-                "font-size: 10px;"
-                "color: #341A0F;"
-                "border: none;"
-            )
-
-
-            bottom_right_layout.addWidget(post_title_label)
-            bottom_right_layout.addWidget(bottom_right_number_label)
-
-            bottom_text_container.addLayout(bottom_left_layout)
-            bottom_text_container.addLayout(bottom_right_layout)
-
-            layout.addLayout(bottom_text_container)
-
-            row_layout.addWidget(post_container)
-
-        scroll_area.setWidget(feed_container)
+            scroll_area.setWidget(feed_container)
         
         # Adicionando um spacer item para ajustar o espaçamento
         spacer_item = QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
