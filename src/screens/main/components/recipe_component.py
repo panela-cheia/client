@@ -3,9 +3,10 @@ from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt
 
 class Recipe(QWidget):
-    def __init__(self, parent=None, data=None):
+    def __init__(self, parent=None, data=None, react=None):
         super().__init__(parent)
         self.data = data
+        self.react = react
 
         self.setup_ui()
 
@@ -184,7 +185,7 @@ class Recipe(QWidget):
         bao_button.setStyleSheet("QPushButton { border:none;}")
         bao_button.setIconSize(bao_button.size())
         bao_button.setFlat(True)
-        bao_button.clicked.connect(lambda: self.react(type="bão"))
+        bao_button.clicked.connect(lambda: self.handle_react(type="bão"))
         reaction_layout.addWidget(bao_button)
 
         qtt_bao = QLabel(self.data["reactions"]["bao"])
@@ -207,7 +208,7 @@ class Recipe(QWidget):
         mio_de_bao_button.setStyleSheet("QPushButton { border:none;}")
         mio_de_bao_button.setIconSize(mio_de_bao_button.size())
         mio_de_bao_button.setFlat(True)
-        mio_de_bao_button.clicked.connect(lambda: self.react(type="mió de bão"))
+        mio_de_bao_button.clicked.connect(lambda: self.handle_react(type="mió de bão"))
         reaction_layout.addWidget(mio_de_bao_button)
 
         qtt_mio_de_bao = QLabel(self.data["reactions"]["mio_de_bao"])
@@ -230,7 +231,7 @@ class Recipe(QWidget):
         agua_na_boca_button.setStyleSheet("QPushButton { border:none;}")
         agua_na_boca_button.setIconSize(agua_na_boca_button.size())
         agua_na_boca_button.setFlat(True)
-        agua_na_boca_button.clicked.connect(lambda: self.react(type="água na boca"))
+        agua_na_boca_button.clicked.connect(lambda: self.handle_react(type="água na boca"))
         reaction_layout.addWidget(agua_na_boca_button)
 
         qtt_agua_na_boca = QLabel(self.data["reactions"]["agua_na_boca"])
@@ -250,6 +251,5 @@ class Recipe(QWidget):
 
         layout.addWidget(post_container)
 
-    def react(self,type):
-        print(type)
-        print(self.data["id"])
+    def handle_react(self,type):
+        self.react(recipe_id=self.data["id"],type=type)

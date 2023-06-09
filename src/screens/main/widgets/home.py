@@ -99,7 +99,7 @@ class HomeWidget(QMainWindow):
                     row_layout = QHBoxLayout()
                     feed_container_layout.addLayout(row_layout)
 
-                recipe = Recipe(self, data=data)
+                recipe = Recipe(self, data=data,react=self.react)
                 row_layout.addWidget(recipe)
 
             scroll_area.setWidget(feed_container)
@@ -129,3 +129,21 @@ class HomeWidget(QMainWindow):
         popup = PopupDialog(self)
         popup.exec_()
 
+    def react(self,recipe_id,type):
+        message = {
+            "topic": "@recipe/reaction_recipe",
+            "body": {
+                "type": type,
+                "recipe_id": recipe_id,
+                "user_id": self.app.user["user"]["id"]
+            }
+        }
+
+        message = json.dumps(message)
+        self.app.client.send(message=message)
+        message = self.app.client.read()
+
+        print(message)
+        
+
+        print("aaaaaa")
