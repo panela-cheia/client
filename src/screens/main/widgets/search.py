@@ -2,73 +2,13 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScroll
 from PySide2.QtGui import QPixmap, QIcon, QPainter, QColor
 from PySide2.QtCore import Qt
 
-json_data = {
-    "dives": [
-            {
-                "id": "4ebc6c64-7f1b-41f4-90e5-47c5e1456920",
-                "name": "Macarronada",
-                "description": "comunidade da galera que gosta de macarronada",
-                "members": "3 membros",
-                "photo": None
-            },
-        {
-                "id": "b9339c14-daba-4cc9-b736-50ac8da36d88",
-                "name": "Açai!",
-                "description": "teste",
-                "members": "3 membros",
-                "photo": None
-        }
-    ],
-    "users": [
-        {
-            "id": "5f3df9b2-3b1e-422d-baff-d9e34a1ad73a",
-            "name": "João da Silva",
-            "username": "@joaodasilva",
-            "photo": None,
-            "common_followers": "0 amigo(s)",
-            "common_dives": "0 buteco(s)"
-        },
-        {
-            "id": "5229e1fa-5b96-48eb-bcec-49f4b413ea7b",
-            "name": "João de Barro",
-            "username": "@joaodebarro",
-            "photo": None,
-            "common_followers": "1 amigo(s)",
-            "common_dives": "3 buteco(s)"
-        },
-        {
-            "id": "5ca07281-0e46-4abc-8f1f-54b61ca27631",
-            "name": "Luciano Belo",
-            "username": "@luciano_belojr",
-            "photo": None,
-            "common_followers": "1 amigo(s)",
-            "common_dives": "2 buteco(s)"
-        },
-        {
-            "id": "823e3881-bda1-4f2a-9593-83c8d7fd0044",
-            "name": "Artur Papa",
-            "username": "@moviepapa",
-            "photo": None,
-            "common_followers": "1 amigo(s)",
-            "common_dives": "1 buteco(s)"
-        },
-        {
-            "id": "f57255d9-afc0-478e-949b-0301f0bc05d0",
-            "name": "teste em aberto",
-            "username": "@teste",
-            "photo": None,
-            "common_followers": "1 amigo(s)",
-            "common_dives": "0 buteco(s)"
-        }
-    ]
-
-}
-
+import json
 
 class SearchWidget(QWidget):
     def __init__(self,app):
         super().__init__()
         self.app = app
+        self.data = {"dives": [], "users": []}
 
         # Create the main layout
         layout = QVBoxLayout()
@@ -111,52 +51,25 @@ class SearchWidget(QWidget):
         layout.addLayout(input_layout)
 
         # Create a scroll area for the search results
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setStyleSheet(
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setStyleSheet(
             "QScrollArea { background-color: #FFFFFF; border: none; }"
             "QScrollBar:vertical { background-color: #F2F2F2; width: 12px; margin: 0px; }"
             "QScrollBar::handle:vertical { background-color: #CCCCCC; border-radius: 6px; }"
             "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { background: none; }"
             "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }"
         )
-        layout.addWidget(scroll_area)
+        layout.addWidget(self.scroll_area)
 
         # Create a widget to hold the search results
-        results_widget = QWidget()
-        scroll_area.setWidget(results_widget)
+        self.results_widget = QWidget()
+        self.scroll_area.setWidget(self.results_widget)
 
         # Create a layout for the search results
-        results_layout = QVBoxLayout()
-        results_layout.setSpacing(0)
-        results_widget.setLayout(results_layout)
-
-        # Get the "dives" and "users" from the JSON data
-        dives = json_data["dives"]
-        users = json_data["users"]
-
-        # Add users
-        for user in users:
-            self.addUserResult(results_layout, user)
-
-         # Add a horizontal line
-        line = QFrame()
-        line.setFrameShape(QFrame.HLine)
-        line.setFrameShadow(QFrame.Sunken)
-        line.setStyleSheet("color:#EEEEEE;")
-        results_layout.addWidget(line)
-
-        # Add "Butecos" text with the specified styling
-        butecos_label = QLabel("Butecos")
-        butecos_label.setStyleSheet(
-            "font-family: 'Roboto Slab'; font-style: normal; font-weight: 500; font-size: 24px; color: #42210B;"
-        )
-        butecos_label.setContentsMargins(0, 24, 0, 24)
-        results_layout.addWidget(butecos_label)
-
-        # Add dives and horizontal separator
-        for dive in dives:
-            self.addDiveResult(results_layout, dive)
+        self.results_layout = QVBoxLayout()
+        self.results_layout.setSpacing(0)
+        self.results_widget.setLayout(self.results_layout)
 
         # Set the main layout alignment.
         layout.setAlignment(Qt.AlignTop)
@@ -252,13 +165,79 @@ class SearchWidget(QWidget):
         details_layout.addWidget(additional_details_label)
 
         results_layout.addLayout(result_layout)
+
     def search(self, value):
         message = {
             "topic": "@search/dive_and_users",
             "body": {
-                "user_id": "75621072-e6b5-49ae-a5ff-424707d534b2",
+                "user_id": self.app.user["user"]["id"],
                 "value": value
             }
         }
 
-        print(message)
+        message = json.dumps(message)
+        self.app.client.send(message=message)
+        message = self.app.client.read()
+
+        data = json.loads(message)
+
+        # Limpar as listas existentes
+        self.data["dives"] = []
+        self.data["users"] = []
+
+        # Reconstruir as listas com base no retorno
+        for item in data["dives"]:
+            self.data["dives"].append(item)
+        for item in data["users"]:
+            self.data["users"].append(item)
+
+        # Rebuild the UI with the new search results
+        self.buildSearchResults()
+    
+    def buildSearchResults(self):
+        # Clear the existing search results
+        while self.results_layout.count() > 0:
+            item = self.results_layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
+        # Create a new widget to hold the search results
+        new_results_widget = QWidget()
+        new_results_layout = QVBoxLayout(new_results_widget)
+        new_results_layout.setSpacing(0)
+
+        # Get the "dives" and "users" from the updated JSON data
+        dives = self.data["dives"]
+        users = self.data["users"]
+
+        # Add users
+        for user in enumerate(users):
+            self.addUserResult(new_results_layout, user)
+
+        # Add a horizontal line
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        line.setStyleSheet("color:#EEEEEE;")
+        new_results_layout.addWidget(line)
+
+        # Add "Butecos" text with the specified styling
+        butecos_label = QLabel("Butecos")
+        butecos_label.setStyleSheet(
+            "font-family: 'Roboto Slab'; font-style: normal; font-weight: 500; font-size: 24px; color: #42210B;"
+        )
+        butecos_label.setContentsMargins(0, 24, 0, 24)
+        new_results_layout.addWidget(butecos_label)
+
+        # Add dives and horizontal separator
+        for dive in enumerate(dives):
+            self.addDiveResult(new_results_layout, dive)
+
+        # Replace the results widget and layout with the new ones
+        self.scroll_area.setWidget(new_results_widget)
+        self.results_widget = new_results_widget
+        self.results_layout = new_results_layout
+
+        # Refresh the scroll area to reflect the changes
+        self.scroll_area.repaint()
