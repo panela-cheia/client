@@ -99,7 +99,7 @@ class HomeWidget(QMainWindow):
                     row_layout = QHBoxLayout()
                     feed_container_layout.addLayout(row_layout)
 
-                recipe = Recipe(self, data=data,react=self.react)
+                recipe = Recipe(self, data=data,react=self.react, save_recipe=self.save_recipe)
                 row_layout.addWidget(recipe)
 
             scroll_area.setWidget(feed_container)

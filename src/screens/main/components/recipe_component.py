@@ -2,8 +2,10 @@ from PySide2.QtWidgets import QWidget, QDialog, QVBoxLayout, QHBoxLayout, QLabel
 from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt, QTimer
 
+
+
 class Recipe(QWidget):
-    def __init__(self, parent=None, data=None, react=None,save_recipe=None):
+    def __init__(self, parent=None, data=None, react=None, save_recipe=None):
         super().__init__(parent)
         self.data = data
         self.react = react
@@ -177,6 +179,7 @@ class Recipe(QWidget):
         bao_button = QPushButton()
         mio_de_bao_button = QPushButton()
         agua_na_boca_button = QPushButton()
+        save_recipe_button = QPushButton()
 
         # BAO ICON
         bao_icon = QIcon("src/assets/images/bao.png")
@@ -247,6 +250,17 @@ class Recipe(QWidget):
         )
         reaction_layout.addWidget(qtt_agua_na_boca)
 
+        # Save recipe icon
+        save_recipe_icon = QIcon("src/assets/icons/bookmark.png")
+        save_recipe_pixmap = save_recipe_icon.pixmap(60, 60)
+        save_recipe_button.setIcon(QIcon(save_recipe_pixmap))
+        save_recipe_button.setFixedSize(90, 90)
+        save_recipe_button.setStyleSheet("QPushButton { border:none;}")
+        save_recipe_button.setIconSize(save_recipe_button.size())
+        save_recipe_button.setFlat(True)
+        save_recipe_button.clicked.connect(lambda: self.handle_save_recipe())
+        reaction_layout.addWidget(save_recipe_button)
+        
         # Add the input and button layout to the main layout
         layout_widget.addLayout(reaction_layout)
 
@@ -282,18 +296,6 @@ class Recipe(QWidget):
         )
         reaction_popup.setFixedSize(400, 400)
         reaction_popup_layout = QVBoxLayout()
-        
-        # close_button = QPushButton()
-        # close_button.setFixedSize(35, 35)
-        # close_button.setStyleSheet(
-        #     "QPushButton { background-color: #F2F2F2; border-radius: 10px; }"
-        #     "QPushButton:hover { background-color: #BABABA; }"
-        # )
-        # # Load the image for the close button
-        # close_button_icon = QIcon("src/assets/icons/x.png")
-        # close_button.setIcon(close_button_icon)
-        # close_button.clicked.connect(reaction_popup.close)
-        # reaction_popup_layout.addWidget(close_button, alignment=Qt.AlignRight)
         
         image_label = QLabel()
         
@@ -335,4 +337,60 @@ class Recipe(QWidget):
         self.react(recipe_id=self.data["id"],type=type)
 
     def handle_save_recipe(self):
+        # Defining the time a popup will be in the user's display
+        timer = QTimer()
+        timer.setSingleShot(True)
+        
+        # Defined in miliseconds
+        time = 1500
+        
+        # Displaying popup with successfull reaction
+        reaction_popup = QDialog()
+        reaction_popup.setWindowTitle("Receita salva!")
+        reaction_popup.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
+        reaction_popup.setStyleSheet(
+            "QDialog {"
+            "   background: #FFFFFF;"
+            "   border: 1px solid #EEEEEE;"
+            "}"
+            "QLabel {"
+            "   color: #341A0F;"
+            "   padding: 10px 0;"
+            "}"
+            "QFrame#header {"
+            "   border-bottom: 2px solid #EEEEEE;"
+            "}"
+            "QFrame#content {"
+            "   padding: 20px;"
+            "}"
+        )
+        reaction_popup.setFixedSize(300, 300)
+        reaction_popup_layout = QVBoxLayout()
+        
+        image_label = QLabel()
+        
+        image_pixmap = QPixmap("src/assets/images/logo.png")
+        image_pixmap = image_pixmap.scaled(200, 200, aspectRatioMode=Qt.KeepAspectRatio)
+        image_label.setPixmap(image_pixmap)
+        reaction_popup_layout.addWidget(image_label, alignment=Qt.AlignCenter)
+        
+        reaction_message = QLabel("Receita salva!")
+        reaction_message.setStyleSheet(
+            "font-family: 'Roboto Slab';"
+            "font-style: normal;"
+            "font-weight: 500;"
+            "font-size: 12px;"
+            "line-height: 16px;"
+            "color: #341A0F;"
+            "border: none;"
+        )
+        reaction_popup_layout.addWidget(reaction_message, alignment=Qt.AlignCenter)
+        reaction_popup.setLayout(reaction_popup_layout)
+        
+        # Connect QTimer timeout to QDialog close method
+        timer.timeout.connect(reaction_popup.close)
+        timer.start(time)
+        
+        reaction_popup.exec_()
+        
         self.save_recipe(recipe_id=self.data["id"])
