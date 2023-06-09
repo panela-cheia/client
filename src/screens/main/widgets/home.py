@@ -114,7 +114,6 @@ class HomeWidget(QMainWindow):
         spacer_item = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Preferred)
         title_button_container.addItem(spacer_item)
 
-
         # Layout principal
         main_layout = QVBoxLayout()
         main_layout.addLayout(title_button_container)
@@ -136,6 +135,21 @@ class HomeWidget(QMainWindow):
                 "type": type,
                 "recipe_id": recipe_id,
                 "user_id": self.app.user["user"]["id"]
+            }
+        }
+
+        message = json.dumps(message)
+        self.app.client.send(message=message)
+        message = self.app.client.read()
+
+        print(message)
+
+    def save_recipe(self,recipe_id):
+        message = {
+            "topic": "@barn/save_recipe_barn",
+            "body": {
+                "id": self.app.user["user"]["barnId"],
+                "recipe_id": recipe_id
             }
         }
 

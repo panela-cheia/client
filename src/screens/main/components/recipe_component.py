@@ -3,10 +3,11 @@ from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt, QTimer
 
 class Recipe(QWidget):
-    def __init__(self, parent=None, data=None, react=None):
+    def __init__(self, parent=None, data=None, react=None,save_recipe=None):
         super().__init__(parent)
         self.data = data
         self.react = react
+        self.save_recipe = save_recipe
 
         self.setup_ui()
 
@@ -332,3 +333,6 @@ class Recipe(QWidget):
         reaction_popup.exec_()
                 
         self.react(recipe_id=self.data["id"],type=type)
+
+    def handle_save_recipe(self):
+        self.save_recipe(recipe_id=self.data["id"])
