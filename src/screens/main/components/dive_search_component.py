@@ -4,12 +4,15 @@ from PySide2.QtCore import Qt,Signal
 
 import base64
 
+from screens.main.components.dive_profile_dialog import DiveProfileDialog
+
 class DiveSearchComponent(QWidget):
     clicked = Signal()
 
-    def __init__(self, dive):
+    def __init__(self, dive ,app):
         super().__init__()
         self.dive = dive
+        self.app = app
         self.initUI()
 
     def initUI(self):
@@ -78,8 +81,9 @@ class DiveSearchComponent(QWidget):
 
         self.setLayout(layout)
 
-    def mousePressEvent(self):
+    def mousePressEvent(self,event):
         self.clicked.emit()
 
     def open_dive_search_popup(self):
-        print(self.dive)
+        popup = DiveProfileDialog(app=self.app,dive=self.dive)
+        popup.exec_()

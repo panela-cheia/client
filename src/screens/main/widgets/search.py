@@ -78,12 +78,12 @@ class SearchWidget(QWidget):
         layout.setAlignment(Qt.AlignTop)
 
     def addUserResult(self, results_layout, user):
-        user_component = UserSearchComponent(user)
+        user_component = UserSearchComponent(user=user,app=self.app)
         user_component.clicked.connect(user_component.open_user_search_popup)
         results_layout.addWidget(user_component)
 
     def addDiveResult(self, results_layout, dive):
-        dive_component = DiveSearchComponent(dive)
+        dive_component = DiveSearchComponent(dive=dive,app=self.app)
         dive_component.clicked.connect(dive_component.open_dive_search_popup)
         results_layout.addWidget(dive_component)
     

@@ -4,12 +4,15 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Qt,Signal
 
+from screens.main.components.other_user_profile_dialog import OtherUserProfileDialog
+
 class UserSearchComponent(QWidget):
     clicked = Signal()
 
-    def __init__(self, user):
+    def __init__(self, user,app):
         super().__init__()
         self.user = user
+        self.app = app
         self.initUI()
 
     def initUI(self):
@@ -76,8 +79,9 @@ class UserSearchComponent(QWidget):
 
         self.setLayout(layout)
 
-    def mousePressEvent(self):
+    def mousePressEvent(self,event):
         self.clicked.emit()
 
     def open_user_search_popup(self):
-        print(self.dive)
+        popup = OtherUserProfileDialog(app=self.app,user_id=self.user["id"])
+        popup.exec_()
