@@ -1,8 +1,11 @@
+import json
+
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScrollArea, QLineEdit, QPushButton, QFrame
-from PySide2.QtGui import QPixmap, QIcon, QPainter, QColor
+from PySide2.QtGui import QIcon
 from PySide2.QtCore import Qt
 
-import json
+from screens.main.components.dive_search_component import DiveSearchComponent
+from screens.main.components.user_search_component import UserSearchComponent
 
 class SearchWidget(QWidget):
     def __init__(self,app):
@@ -75,104 +78,15 @@ class SearchWidget(QWidget):
         layout.setAlignment(Qt.AlignTop)
 
     def addUserResult(self, results_layout, user):
-        result_layout = QHBoxLayout()
-        result_layout.setSpacing(24)
-        result_layout.setContentsMargins(0, 0, 0, 24)  # Updated margin bottom
+        user_component = UserSearchComponent(user)
+        user_component.clicked.connect(user_component.open_user_search_popup)
+        results_layout.addWidget(user_component)
 
-        # Create the icon
-        
-        '''
-        if user["photo"]:
-            icon_path = user["photo"]["path"]
-        else:
-        '''  
-
-        icon_path = "src/assets/images/profile-1.png"
-        icon_label = QLabel()
-        icon_label.setFixedSize(60, 60)
-        icon_label.setStyleSheet("border-radius: 50%;")
-        pixmap = QPixmap(icon_path)
-        icon_label.setPixmap(pixmap.scaled(
-            60, 60, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
-        result_layout.addWidget(icon_label)
-
-        # Create the result details container
-        details_container = QWidget()
-        details_container.setStyleSheet("background-color: #FFFFFF;")
-        details_container.setFixedHeight(60)  # Set the fixed height
-        result_layout.addWidget(details_container)
-
-        # Create the layout for the details container
-        details_layout = QVBoxLayout(details_container)
-        details_layout.setContentsMargins(0, 0, 0, 0)
-        details_layout.setSpacing(4)
-
-        # Create the name label
-        name_label = QLabel(user["name"])
-        name_label.setStyleSheet(
-            "font-family: 'Roboto Slab'; font-style: normal; font-weight: 500; font-size: 24px; color: #341A0F;"
-        )
-        details_layout.addWidget(name_label)
-
-        # Create the additional details label
-        additional_details_text = f"{user['common_followers']} e {user['common_dives']} em comum"
-        additional_details_label = QLabel(additional_details_text)
-        additional_details_label.setStyleSheet(
-            "font-family: 'Roboto Slab'; font-style: normal; font-weight: 300; font-size: 14px; color: #42210B;"
-        )
-        details_layout.addWidget(additional_details_label)
-
-        results_layout.addLayout(result_layout)
-
-    def addDiveResult(self, results_layout, bar):
-        result_layout = QHBoxLayout()
-        result_layout.setSpacing(24)
-        result_layout.setContentsMargins(0, 0, 0, 24)  # Updated margin bottom
-
-        '''
-        # Create the icon
-        if bar["photo"]:
-            icon_path = bar["photo"]["path"]
-        else:
-        '''
-
-        icon_path = "src/assets/images/buteco.png"
-        icon_label = QLabel()
-        icon_label.setFixedSize(60, 60)
-        icon_label.setStyleSheet("border-radius: 50%;")
-        pixmap = QPixmap(icon_path)
-        icon_label.setPixmap(pixmap.scaled(
-            60, 60, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
-        result_layout.addWidget(icon_label)
-
-        # Create the result details container
-        details_container = QWidget()
-        details_container.setStyleSheet("background-color: #FFFFFF;")
-        details_container.setFixedHeight(60)  # Set the fixed height
-        result_layout.addWidget(details_container)
-
-        # Create the layout for the details container
-        details_layout = QVBoxLayout(details_container)
-        details_layout.setContentsMargins(0, 0, 0, 0)
-        details_layout.setSpacing(4)
-
-        # Create the name label
-        name_label = QLabel(bar["name"])
-        name_label.setStyleSheet(
-            "font-family: 'Roboto Slab'; font-style: normal; font-weight: 500; font-size: 24px; color: #341A0F;"
-        )
-        details_layout.addWidget(name_label)
-
-        # Create the additional details label
-        additional_details_text = f"{bar['description']} - {bar['members']}"
-        additional_details_label = QLabel(additional_details_text)
-        additional_details_label.setStyleSheet(
-            "font-family: 'Roboto Slab'; font-style: normal; font-weight: 300; font-size: 14px; color: #42210B;"
-        )
-        details_layout.addWidget(additional_details_label)
-
-        results_layout.addLayout(result_layout)
-
+    def addDiveResult(self, results_layout, dive):
+        dive_component = DiveSearchComponent(dive)
+        dive_component.clicked.connect(dive_component.open_dive_search_popup)
+        results_layout.addWidget(dive_component)
+    
     def search(self, value):
         message = {
             "topic": "@search/dive_and_users",
