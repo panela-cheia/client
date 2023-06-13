@@ -1,12 +1,18 @@
 import socket
 import json
 
-from messages import aux16
+aux16 = {
+    "topic": "@recipe/list_recipe",
+    "body": {
+    }
+}
+
+from config.app_url import HOST,PORT
 
 class Client:
     def __init__(self) -> None:
-        self.SERVER = '127.0.0.1'
-        self.PORT = 3031
+        self.SERVER = HOST
+        self.PORT = PORT
         self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.dest = (self.SERVER, self.PORT)
 
@@ -28,6 +34,12 @@ class Client:
             else:
                 message += str(msg.decode())
         return message
+    
+    def connect(self):
+        self.tcp.connect(self.dest)
+
+    def close(self):
+        self.tcp.close()
 
     def test(self):
         self.tcp.connect(self.dest)
