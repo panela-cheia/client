@@ -127,27 +127,9 @@ class SignupWindow(QWidget):
         layout.addWidget(left_container, 1)
 
     def submit(self, name,username,email, password):
-        message = {
-            "topic": "@user/create_user",
-            "body": {
-                "name": name,
-                "username": username,
-                "email": email,
-                "password": password
-            }
-        }
+        response = self.app.client.services["adapters.create_user_adapter"].execute(name=name,username=username,email=email,password=password)
 
-        # Verifique se há uma conexão aberta antes de fechá-la
-        if self.app.client.tcp.getsockname() is not None:
-            self.app.client.tcp.close()
-        else:
-            self.app.client.tcp.connect(self.app.client.dest)
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-       
-        if not message:
+        if not response:
             return None
         else:
             self.openSignIn()

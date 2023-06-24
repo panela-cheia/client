@@ -88,6 +88,8 @@ class BarnWidget(QWidget):
         self.scroll_area.setWidget(self.feed_container)
 
     def fetch_all_items(self):
+        response = self.client.services["adapters.user_login_adapter"].execute(email=email,password=password)
+        
         message = {
             "topic": "@barn/search_recipe_barn",
             "body": {

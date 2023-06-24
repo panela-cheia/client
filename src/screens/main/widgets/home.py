@@ -81,17 +81,7 @@ class HomeWidget(QMainWindow):
         max_recipes_per_row = 1
         row_layout = None
 
-        message = {
-            "topic": "@recipe/list_recipe",
-            "body": {
-            }
-        }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        recipes = json.loads(message)
+        recipes = self.app.client.services['adapters.list_recipe_adapter'].execute()
     
         if recipes:
             for index, data in enumerate(recipes):
@@ -129,14 +119,7 @@ class HomeWidget(QMainWindow):
         popup.exec_()
 
     def react(self,recipe_id,type):
-        message = {
-            "topic": "@recipe/reaction_recipe",
-            "body": {
-                "type": type,
-                "recipe_id": recipe_id,
-                "user_id": self.app.user["user"]["id"]
-            }
-        }
+        message = self.app.client.services["adapters.reaction_recipe_adapter"].execute(type=type,recipe_id=recipe_id,user_id=self.app.user["user"]["id"])
 
         message = json.dumps(message)
         self.app.client.send(message=message)

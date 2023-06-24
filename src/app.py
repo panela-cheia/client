@@ -1,6 +1,4 @@
 from PySide2.QtWidgets import QApplication
-import json
-
 
 from infra.client.client import Client
 from screens.auth.auth import AuthWindow
@@ -27,7 +25,6 @@ class App(QApplication):
 
     def Boostrap(self,client:Client):
         self.client = client
-        self.client.connect()
 
         if self.login_state:
             self.show_main_window()
@@ -36,30 +33,22 @@ class App(QApplication):
 
     def finish(self):
         print("até logo")
-        self.client.close()
 
     def login(self,email,password):
-        message = {
-            "topic": "@user/login_with_email_user",
-            "body": {
-                "email": email,
-                "password": password
-            }
-        }
+        response = self.client.services["adapters.user_login_adapter"].execute(email=email,password=password)
 
-        message = json.dumps(message)
-        self.client.send(message=message)
-        message = self.client.read()
-
-        if not message:
+        if not response:
             return None
         else:
 
-            if "error" in message:
+            if "error" in response:
                 error_dialog = ErrorDialog()
                 error_dialog.exec_()
             else:
-                data = json.loads(message)
+                data = {
+                    "user":response["user"],
+                    "token":response["token"]
+                }
 
                 self.login_state = True
                 self.user = data
