@@ -120,24 +120,8 @@ class HomeWidget(QMainWindow):
 
     def react(self,recipe_id,type):
         message = self.app.client.services["adapters.reaction_recipe_adapter"].execute(type=type,recipe_id=recipe_id,user_id=self.app.user["user"]["id"])
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
         print(message)
 
     def save_recipe(self,recipe_id):
-        message = {
-            "topic": "@barn/save_recipe_barn",
-            "body": {
-                "id": self.app.user["user"]["barnId"],
-                "recipe_id": recipe_id
-            }
-        }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
+        message = self.app.client.services["adapters.save_recipe_adapter"].execute(barnId=self.app.user["user"]["barnId"],recipeId=recipe_id)
         print(message)

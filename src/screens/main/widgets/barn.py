@@ -88,27 +88,14 @@ class BarnWidget(QWidget):
         self.scroll_area.setWidget(self.feed_container)
 
     def fetch_all_items(self):
-        response = self.client.services["adapters.search_recipe_adapter"].execute()
-        
-        message = {
-            "topic": "@barn/search_recipe_barn",
-            "body": {
-                "id": self.app.user["user"]["barnId"],
-                "name":""
-            }
-        }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        data = json.loads(message)
+        message = self.app.client.services["adapters.search_recipe_barn_adapter"].execute(barnId=self.app.user["user"]["barnId"],recipeName="")
+        # data = json.loads(message)
 
         # Add recipe posts dynamically (replace with your own logic)
         max_recipes_per_row = 3
         row_layout = None
 
-        for i, recipe in enumerate(data):
+        for i, recipe in enumerate(message): #data
             if i % max_recipes_per_row == 0:
                 row_layout = QHBoxLayout()
                 self.feed_container_layout.addLayout(row_layout)
@@ -123,18 +110,8 @@ class BarnWidget(QWidget):
         self.clear_search_results()
 
         value = self.input_widget.text()
-
-        message = {
-            "topic": "@barn/search_recipe_barn",
-            "body": {
-                "id": self.app.user["user"]["barnId"],
-                "name": value
-            }
-        }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
+        
+        message = self.app.client.services["adapters.search_recipe_barn_adapter"].execute(barnId=self.app.user["user"]["barnId"],recipeName=value)
 
         data = json.loads(message)
 
