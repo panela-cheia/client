@@ -84,7 +84,7 @@ class DiveProfileDialog(QDialog):
         self.setLayout(main_layout)
 
     def enter_dive(self):
-        message = self.app.client.services['adapters.enter_dive_adapter'].execute(id=self.app.user["user"]["id"], diveId=self.dive["id"])
+        message = self.app.client.services['adapters.enter_dive_adapter'].execute(userId=self.app.user["user"]["id"], diveId=self.dive["id"])
         print(message)
 
     def exit_dive(self):
