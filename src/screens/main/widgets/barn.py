@@ -110,7 +110,7 @@ class BarnWidget(QWidget):
         self.clear_search_results()
 
         value = self.input_widget.text()
-        
+
         message = self.app.client.services["adapters.search_recipe_barn_adapter"].execute(barnId=self.app.user["user"]["barnId"],recipeName=value)
 
         print(message)
