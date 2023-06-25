@@ -84,31 +84,9 @@ class DiveProfileDialog(QDialog):
         self.setLayout(main_layout)
 
     def enter_dive(self):
-        message = {
-            "topic": "@dive/enter_dive",
-            "body": {
-                "id": self.app.user["user"]["id"],
-                "diveId": self.dive["id"]
-            }
-        }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
+        message = self.app.client.services['adapters.enter_dive_adapter'].execute(id=self.app.user["user"]["id"], diveId=self.dive["id"])
         print(message)
 
     def exit_dive(self):
-        message = {
-            "topic": "@dive/exit_dive",
-            "body": {
-                "user": self.app.user["user"]["id"],
-                "diveId": self.dive["id"]
-            }
-        }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
+        message = self.app.client.services['adapters.exit_dive_adapter'].execute(user=self.app.user["user"]["id"], diveId=self.dive["id"])        
         print(message)

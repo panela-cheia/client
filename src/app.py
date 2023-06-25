@@ -35,7 +35,7 @@ class App(QApplication):
         print("até logo")
 
     def login(self,email,password):
-        response = self.client.services["adapters.user_login_adapter"].execute(email=email,password=password)
+        response = self.client.services['adapters.user_login_adapter'].execute(email=email,password=password)
 
         if not response:
             return None

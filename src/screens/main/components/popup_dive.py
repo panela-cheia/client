@@ -24,13 +24,15 @@ class ImageUploadThread(QThread):
         # Codifica os dados da imagem em Base64
         encoded_image_data = base64.b64encode(image_data).decode("utf-8")
 
-        message = {
-            "topic": "@file/create_file",
-            "body": {
-                "name": name,
-                "path": encoded_image_data
-            }
-        }
+        message = self.app.client.services['adapters.create_file_adapter'].execute(name=name, path=encoded_image_data)
+        
+        # message = {
+        #     "topic": "@file/create_file",
+        #     "body": {
+        #         "name": name,
+        #         "path": encoded_image_data
+        #     }
+        # }
 
         self.image_uploaded.emit(json.dumps(message))  # Emitir também o file_path
 

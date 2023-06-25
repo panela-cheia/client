@@ -69,22 +69,13 @@ class DiveWidget(QWidget):
         # Add dive posts dynamically (replace with your own logic)
         max_dives_per_row = 2
         row_layout = None
-    
-        message = {
-            "topic": "@dive/users_dive",
-            "body": {
-                "user_id": self.app.user["user"]["id"],
-            }
-        }
 
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
+        message = self.app.client.services['adapters.list_users_adapter'].execute(userId=self.app.user["user"]["id"])
 
-        data = json.loads(message)
+        # data = json.loads(message)
 
-        if len(data) > 0:
-            for index, dive in enumerate(data):
+        if len(message) > 0:
+            for index, dive in enumerate(message):
                 if index % max_dives_per_row == 0:
                     row_layout = QHBoxLayout()
                     feed_container_layout.addLayout(row_layout)
@@ -103,17 +94,6 @@ class DiveWidget(QWidget):
         popup.exec_()
 
     def handle_create_dive(self,name,description,file):
-        message={
-            "topic": "@dive/create_dive",
-            "body": {
-                "name": name,
-                "description": description,
-                "fileId": file["id"],
-                "userId": self.app.user["user"]["id"]
-            }
-        }
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
+        message = self.app.client.services['adapters.create_dive_adapter'].execute(name=name, description=description, fileId=file, userId=self.app.user["user"]["id"])
 
         return message

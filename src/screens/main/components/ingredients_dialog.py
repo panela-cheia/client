@@ -83,17 +83,7 @@ class IngredientsDialog(QDialog):
         self.amount_input = QLineEdit()
         self.amount_input.setPlaceholderText("Quantidade")
 
-
-        message = {
-            "topic": "@ingredients_unit/list_ingredients_unit",
-            "body": {
-            
-            }
-        }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
+        message = self.app.client.services['adapters.list_ingredients_unit_adapter'].execute()
 
         units = json.loads(message)
 
