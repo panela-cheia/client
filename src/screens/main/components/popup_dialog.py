@@ -11,9 +11,10 @@ from screens.main.components.image_view_dialog import ImageViewDialog
 class ImageUploadThread(QThread):
     image_uploaded = Signal(str)  # Adicionado novo parâmetro para file_path
 
-    def __init__(self, file_path):
+    def __init__(self, file_path, app):
         super().__init__()
         self.file_path = file_path
+        self.app = app
 
     def run(self):
         name = os.path.basename(self.file_path)
@@ -23,14 +24,8 @@ class ImageUploadThread(QThread):
 
         # Codifica os dados da imagem em Base64
         encoded_image_data = base64.b64encode(image_data).decode("utf-8")
-
-        message = {
-            "topic": "@file/create_file",
-            "body": {
-                "name": name,
-                "path": encoded_image_data
-            }
-        }
+        
+        message = self.app.client.services['adapters.create_file_adapter'].execute(name=name, path=encoded_image_data)
 
         self.image_uploaded.emit(json.dumps(message))  # Emitir também o file_path
 

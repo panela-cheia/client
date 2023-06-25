@@ -11,9 +11,10 @@ from screens.shared.errors.error_dialog import ErrorDialog
 class ImageUploadThread(QThread):
     image_uploaded = Signal(str)  # Adicionado novo parâmetro para file_path
 
-    def __init__(self, file_path):
+    def __init__(self, file_path, app):
         super().__init__()
         self.file_path = file_path
+        self.app = app
 
     def run(self):
         name = os.path.basename(self.file_path)
@@ -274,7 +275,7 @@ class PopupDive(QDialog):
         if file_dialog.exec_():
             file_path = file_dialog.selectedFiles()[0]
             
-            upload_thread = ImageUploadThread(file_path)
+            upload_thread = ImageUploadThread(file_path, app=self.app)
             upload_thread.image_uploaded.connect(self.handle_image_upload)
             upload_thread.start()
 

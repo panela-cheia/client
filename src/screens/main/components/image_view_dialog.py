@@ -14,18 +14,9 @@ class ImageViewDialog(QDialog):
         super().__init__()
         self.app = app
 
-        message = {
-            "topic": "@dive/users_dive",
-            "body": {
-                "user_id": self.app.user["user"]["id"],
-            }
-        }
+        message = self.app.client.services['adapters.list_users_adapter'].execute(userId=self.app.user["user"]["id"])
 
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        self.data = json.loads(message)
+        # message = json.loads(message)
 
 
         self.setWindowTitle("Imagem Selecionada")
@@ -144,7 +135,7 @@ class ImageViewDialog(QDialog):
         category_combobox = QComboBox()
         category_combobox.addItem("")
 
-        for dive in self.data:
+        for dive in message:
             category_combobox.addItem(dive["name"])
         
         form_container_layout.addRow(category_label, category_combobox)
@@ -193,7 +184,7 @@ class ImageViewDialog(QDialog):
             "   background-color: #42210B;"
             "}"
         )
-        save_button.clicked.connect(lambda: self.save_recipe(name=name_input.text(),description=description_input.text(),dive=category_combobox.currentText(),image_path=image_path))
+        save_button.clicked.connect(lambda: self.save_recipe(name=name_input.text(),description=description_input.text(),dive=category_combobox.currentText(),image_path=image_path, message=message))
 
         # Add the buttons to the button layout
         button_layout.addWidget(cancel_button)
@@ -205,9 +196,9 @@ class ImageViewDialog(QDialog):
         # Add the content frame to the main layout
         main_layout.addWidget(content_frame)
 
-    def save_recipe(self, name, description, dive, image_path):
+    def save_recipe(self, name, description, dive, image_path, message):
         
-        final_dive = None if self.find_object_by_name(name=dive) == None else self.find_object_by_name(name=dive)["id"]
+        final_dive = None if self.find_object_by_name(name=dive, message=message) == None else self.find_object_by_name(name=dive, message=message)["id"]
 
         # Open a new dialog to display the selected image
         ingredients_dialog = IngredientsDialog(app=self.app,name=name,description=description,dive=final_dive,image_path=image_path)
@@ -215,8 +206,8 @@ class ImageViewDialog(QDialog):
 
         self.close()
 
-    def find_object_by_name(self,name):
-        for obj in self.data:
+    def find_object_by_name(self, name, message):
+        for obj in message:
             if obj["name"] == name:
                 return obj
         return None
