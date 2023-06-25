@@ -12,18 +12,9 @@ class OtherUserProfileDialog(QDialog):
         self.app = app
         self.user_id = user_id
 
-        message = {
-            "topic": "@user/profile_user",
-            "body": {
-                "user_id": user_id,
-            }
-        }
-        
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
+        response = self.app.client.services["adapters.user_profile_adapter"].execute(user_id=user_id)
 
-        data = json.loads(message)
+        data = response
 
         self.setFixedSize(924, 640)
         self.setWindowTitle(data["name"])

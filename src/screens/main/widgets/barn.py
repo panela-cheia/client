@@ -113,7 +113,9 @@ class BarnWidget(QWidget):
         
         message = self.app.client.services["adapters.search_recipe_barn_adapter"].execute(barnId=self.app.user["user"]["barnId"],recipeName=value)
 
-        data = json.loads(message)
+        print(message)
+
+        data = message
 
         # Add recipe posts dynamically (replace with your own logic)
         max_recipes_per_row = 3

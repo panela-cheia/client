@@ -274,16 +274,19 @@ class PopupDive(QDialog):
         
         if file_dialog.exec_():
             file_path = file_dialog.selectedFiles()[0]
-            
-            upload_thread = ImageUploadThread(file_path, app=self.app)
-            upload_thread.image_uploaded.connect(self.handle_image_upload)
-            upload_thread.start()
+            name = os.path.basename(file_path)
 
-    def handle_image_upload(self, message):
-        self.app.client.send(message=message)
-        response = self.app.client.read()
-        
-        file = json.loads(response)
+            with open(file_path, "rb") as file:
+                image_data = base64.b64encode(file.read()).decode("utf-8")
+
+            create_file_adapter = self.app.client.services['adapters.create_file_adapter']
+            response = create_file_adapter.execute(name=name, path=image_data)
+            
+            self.handle_image_upload(response=response)
+
+    def handle_image_upload(self, response):
+    
+        file = response
         self.file = file
         
         # Verifica se a imagem foi carregada com sucesso

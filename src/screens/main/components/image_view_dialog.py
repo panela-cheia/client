@@ -4,7 +4,6 @@ from PySide2.QtCore import Qt
 
 from screens.main.components.ingredients_dialog import IngredientsDialog
 
-import json
 import base64
 
 from screens.shared.errors.error_dialog import ErrorDialog
@@ -15,9 +14,6 @@ class ImageViewDialog(QDialog):
         self.app = app
 
         message = self.app.client.services['adapters.list_users_adapter'].execute(userId=self.app.user["user"]["id"])
-
-        # message = json.loads(message)
-
 
         self.setWindowTitle("Imagem Selecionada")
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)

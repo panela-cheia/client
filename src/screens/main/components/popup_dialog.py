@@ -1,59 +1,36 @@
 import os
-import json
 import base64
 
 from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QFrame, QFileDialog
 from PySide2.QtGui import QIcon, QPixmap
-from PySide2.QtCore import Qt,QThread,Signal
+from PySide2.QtCore import Qt
 
 from screens.main.components.image_view_dialog import ImageViewDialog
 
-class ImageUploadThread(QThread):
-    image_uploaded = Signal(str)  # Adicionado novo parâmetro para file_path
-
-    def __init__(self, file_path, app):
-        super().__init__()
-        self.file_path = file_path
-        self.app = app
-
-    def run(self):
-        name = os.path.basename(self.file_path)
-
-        with open(self.file_path, "rb") as file:
-            image_data = file.read()
-
-        # Codifica os dados da imagem em Base64
-        encoded_image_data = base64.b64encode(image_data).decode("utf-8")
-        
-        message = self.app.client.services['adapters.create_file_adapter'].execute(name=name, path=encoded_image_data)
-
-        self.image_uploaded.emit(json.dumps(message))  # Emitir também o file_path
-
 class PopupDialog(QDialog):
-    def __init__(self, app ,parent=None):
+    def __init__(self, app, parent=None):
         super().__init__(parent)
         self.app = app
         self.setWindowTitle("Search")
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
         self.setStyleSheet(
             "QDialog {"
-            "   background: #FFFFFF;"
-            "   border: 1px solid #EEEEEE;"
+            " background: #FFFFFF;"
+            " border: 1px solid #EEEEEE;"
             "}"
             "QLabel {"
-            "   color: #341A0F;"
-            "   padding: 10px 0;"
+            " color: #341A0F;"
+            " padding: 10px 0;"
             "}"
             "QFrame#header {"
-            "   border-bottom: 2px solid #EEEEEE;"
+            " border-bottom: 2px solid #EEEEEE;"
             "}"
             "QFrame#content {"
-            "   padding: 20px;"
+            " padding: 20px;"
             "}"
         )
         self.setFixedSize(640, 640)
-
-        # Create the main layout
+            # Create the main layout
         main_layout = QVBoxLayout(self)
         self.setLayout(main_layout)
 
@@ -65,7 +42,12 @@ class PopupDialog(QDialog):
 
         # Add the title label to the header
         title_label = QLabel("Criar nova receita")
-        title_label.setStyleSheet("font-family: 'Roboto Slab';font-weight: 900;font-size: 32px;color: #341A0F;")
+        title_label.setStyleSheet(
+            "font-family: 'Roboto Slab';"
+            "font-weight: 900;"
+            "font-size: 32px;"
+            "color: #341A0F;"
+        )
         title_label.setAlignment(Qt.AlignCenter)
         header_layout.addWidget(title_label, alignment=Qt.AlignCenter)
 
@@ -73,8 +55,13 @@ class PopupDialog(QDialog):
         close_button = QPushButton()
         close_button.setFixedSize(38, 38)
         close_button.setStyleSheet(
-            "QPushButton { background-color: #F2F2F2; border-radius: 10px; }"
-            "QPushButton:hover { background-color: #BABABA; }"
+            "QPushButton {"
+            "   background-color: #F2F2F2;"
+            "   border-radius: 10px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #BABABA;"
+            "}"
         )
         # Load the image for the close button
         close_button_icon = QIcon("src/assets/icons/x.png")
@@ -103,7 +90,11 @@ class PopupDialog(QDialog):
 
         # Create the text label
         text_label = QLabel("Atualize seu livro de receitas")
-        text_label.setStyleSheet("font-family: 'Roboto Slab';font-size: 20px;color: #341A0F;")
+        text_label.setStyleSheet(
+            "font-family: 'Roboto Slab';"
+            "font-size: 20px;"
+            "color: #341A0F;"
+        )
         text_label.setAlignment(Qt.AlignCenter)
         content_layout.addWidget(text_label, alignment=Qt.AlignCenter)
 
@@ -136,17 +127,21 @@ class PopupDialog(QDialog):
         file_dialog.setNameFilter("Images (*.png *.xpm *.jpg *.bmp)")
         if file_dialog.exec_():
             file_path = file_dialog.selectedFiles()[0]
+            name = os.path.basename(file_path)
 
-            # Create and start the image upload thread
-            upload_thread = ImageUploadThread(file_path)
-            upload_thread.image_uploaded.connect(self.handle_image_upload)
-            upload_thread.start()
+            with open(file_path, "rb") as file:
+                image_data = base64.b64encode(file.read()).decode("utf-8")
 
-    def handle_image_upload(self, message):  # Adicionar o parâmetro file_path
-        self.app.client.send(message=message)
-        response = self.app.client.read()
-        
-        file = json.loads(response)
+            # Fazer chamada ao objeto serial usando RMI
+            # Cria um novo proxy dentro da thread atual
+            create_file_adapter = self.app.client.services['adapters.create_file_adapter']
+            response = create_file_adapter.execute(name=name, path=image_data)
+
+            self.handle_image_upload(response=response)
+
+
+    def handle_image_upload(self, response):  # Adicionar o parâmetro file_path
+        file = response
 
         # Open a new dialog to display the selected image
         image_dialog = ImageViewDialog(app=self.app, image_path=file)

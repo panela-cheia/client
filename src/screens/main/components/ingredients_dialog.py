@@ -85,7 +85,7 @@ class IngredientsDialog(QDialog):
 
         message = self.app.client.services['adapters.list_ingredients_unit_adapter'].execute()
 
-        units = json.loads(message)
+        units = message
 
         # Create the select field
         self.unit_combobox = QComboBox()
@@ -239,22 +239,15 @@ class IngredientsDialog(QDialog):
             item_widget.deleteLater()
 
     def submit(self, name, description, dive, image_path):
-        message = {
-            "topic": "@recipe/create_recipe",
-            "body": {
-                "name": name,
-                "description": description,
-                "diveId": dive,
-                "userId": self.app.user["user"]["id"],
-                "fileId": image_path["id"],
-                "ingredients": self.items
-            }
-        }
+        response = self.app.client.services['adapters.create_recipe_adapter'].execute(
+            name=name,
+            description=description,
+            ingredients=self.items,
+            userId=self.app.user["user"]["id"],
+            fileId=image_path["id"],
+            diveId=dive
+        )
 
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        print(message)
+        print(response)
 
         self.close()

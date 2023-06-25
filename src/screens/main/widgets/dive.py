@@ -4,8 +4,6 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushBu
 from screens.main.components.popup_dive import PopupDive
 from screens.main.components.dive_component import DiveComponent
 
-import json
-
 class DiveWidget(QWidget):
     def __init__(self,app):
         super().__init__()
@@ -94,6 +92,6 @@ class DiveWidget(QWidget):
         popup.exec_()
 
     def handle_create_dive(self,name,description,file):
-        message = self.app.client.services['adapters.create_dive_adapter'].execute(name=name, description=description, fileId=file, userId=self.app.user["user"]["id"])
+        message = self.app.client.services['adapters.create_dive_adapter'].execute(name=name, description=description, fileId=file["id"], userId=self.app.user["user"]["id"])
 
         return message
