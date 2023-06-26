@@ -1,8 +1,7 @@
 import json
 
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QHBoxLayout, QPushButton, QVBoxLayout, QFrame, QLineEdit
-from PySide2.QtGui import QPixmap, QIcon
-from PySide2.QtCore import Qt,QSize
+from PySide2.QtGui import QIcon
 
 from screens.main.components.barn_component import BarnComponent
 
