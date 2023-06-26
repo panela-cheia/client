@@ -9,6 +9,8 @@ from screens.main.widgets.barn import BarnWidget
 from screens.main.widgets.container import WidgetContainer
 from screens.main.widgets.profile import ProfileWidget
 
+import base64
+
 anchors = [
     {
         "label": "Home",
@@ -169,10 +171,15 @@ class MainWindow(QMainWindow):
         profile_button.setLayout(profile_layout)
 
         profile_image = QLabel()
-        profile_pixmap = QPixmap("src/assets/images/profile.png")
-        profile_image.setPixmap(profile_pixmap.scaled(36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
+
+    
+        icon_path = "src/assets/images/profile_user.png"
+        profile_image = QLabel()
         profile_image.setFixedSize(36, 36)
-        profile_image.setStyleSheet("border-radius: 50%;")
+        #profile_image.setStyleSheet("border-radius: 50%;")
+        pixmap = QPixmap(icon_path)
+        profile_image.setPixmap(pixmap.scaled(
+            36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
 
         profile_label = QLabel("Meu perfil")
         profile_label.setStyleSheet(
