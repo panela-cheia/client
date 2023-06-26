@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QWidget, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QPushButton
+from PySide2.QtWidgets import QWidget, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QPushButton,QSpacerItem,QSizePolicy
 from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt, QTimer
 
@@ -86,6 +86,30 @@ class Recipe(QWidget):
         users_infos.addWidget(user_photo_label)
         users_infos.addWidget(post_name_label)
         users_infos.addWidget(date_label)
+
+        if self.data["dive"]:
+            dive_name_label = QLabel(self.data["dive"]["name"])
+            dive_name_label.setStyleSheet(
+                "font-family: 'Roboto Slab';"
+                "font-style: normal;"
+                "font-weight: 700;"
+                "font-size: 12px;"
+                "line-height: 16px;"
+                "color: #000000;"
+                "border: none;"
+            )
+            spacer_item = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+            dive_icon_label = QLabel()
+            dive_icon_pixmap = QPixmap("src/assets/icons/dive.png").scaled(36, 36, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            dive_icon_label.setPixmap(dive_icon_pixmap)
+            dive_icon_label.setStyleSheet("border: none;")
+
+            users_infos.addItem(spacer_item)
+            users_infos.addWidget(dive_icon_label)
+            users_infos.addWidget(dive_name_label)
+
+            users_infos.setSpacing(0)  # Define a margem zero para remover a distância
 
         layout_widget.addLayout(users_infos)
 
