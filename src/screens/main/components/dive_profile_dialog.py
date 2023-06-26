@@ -88,7 +88,7 @@ class DiveProfileDialog(QDialog):
         print(message)
 
     def exit_dive(self):
-        print(self.dive["id"])
+        print(self.dive)
         if (self.app.user["user"]["id"] == self.dive["owner_id"]):
             popup_owner(self)
         else:           
