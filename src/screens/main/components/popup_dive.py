@@ -183,7 +183,6 @@ class PopupDive(QDialog):
             "   background-color: #341A0F;"
             "}"
         )
-        
         create_button.clicked.connect(self.create_buteco)
         self.content_layout.addWidget(create_button, alignment=Qt.AlignCenter)
     
