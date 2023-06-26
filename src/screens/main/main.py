@@ -160,7 +160,6 @@ class MainWindow(QMainWindow):
         anchor4_button.setFixedSize(190, 60)
         anchor_layout.addWidget(anchor4_button)
 
-
         profile_button = QPushButton()
         profile_button.setFixedWidth(184)
         profile_button.setFlat(True)
@@ -172,11 +171,9 @@ class MainWindow(QMainWindow):
 
         profile_image = QLabel()
 
-    
         icon_path = "src/assets/images/profile_user.png"
         profile_image = QLabel()
         profile_image.setFixedSize(36, 36)
-        #profile_image.setStyleSheet("border-radius: 50%;")
         pixmap = QPixmap(icon_path)
         profile_image.setPixmap(pixmap.scaled(
             36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
@@ -195,6 +192,23 @@ class MainWindow(QMainWindow):
         )
         profile_button.clicked.connect(lambda: self.switch_widget("ProfileWidget"))
 
+        # Apply logic to the photo
+        if self.app.user["user"]["photo"]:
+            icon_path = self.app.user["user"]["photo"]["path"]
+
+            try:
+                image_data_decoded = base64.b64decode(icon_path)
+
+                profile_image.setStyleSheet("border-radius: 50%;")
+                pixmap = QPixmap()
+                pixmap.loadFromData(image_data_decoded)
+                profile_image.setPixmap(pixmap.scaled(
+                    36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
+            except:
+                profile_image.setPixmap(QPixmap("src/assets/images/profile_user.png"))
+        else:
+            profile_image.setPixmap(QPixmap("src/assets/images/profile_user.png"))
+            
         # Adiciona os containers ao sidebar layout
         sidebar_layout.addWidget(logo_container)
         sidebar_layout.addWidget(anchor_container)

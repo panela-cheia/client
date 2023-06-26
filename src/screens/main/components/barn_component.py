@@ -4,15 +4,19 @@ from PySide2.QtCore import Qt
 
 import base64
 
-class BarnComponent(QWidget):
+class BarnComponent(QFrame):
     def __init__(self, recipe):
-        super(BarnComponent, self).__init__()
+        super().__init__()
         self.recipe = recipe
 
-        # Set the outer frame for the component
-        self.setStyleSheet("QWidget { border: 2px solid #F2F2F2; border-radius: 16px; }")
+        self.setStyleSheet(
+            "QFrame { background: #FFFFFF; border: 2px solid #F2F2F2; border-radius: 16px; padding: 6px 6px; }"
+        )
 
-        layout = QVBoxLayout(self)
+        # Set the outer frame for the component
+        frame = QFrame()
+
+        layout = QVBoxLayout(frame)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSizeConstraint(QVBoxLayout.SetMinimumSize)  # Set the size constraint
         layout.setAlignment(Qt.AlignCenter)  # Center-align the contents of the layout
@@ -71,3 +75,6 @@ class BarnComponent(QWidget):
 
         # Add the recipe photo label to the layout
         layout.addWidget(icon_label, alignment=Qt.AlignCenter)
+
+        # Set the layout of the component as the layout of the frame
+        self.setLayout(layout)
