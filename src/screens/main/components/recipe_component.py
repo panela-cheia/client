@@ -32,13 +32,30 @@ class Recipe(QWidget):
         layout_widget.setContentsMargins(0, 0, 0, 0)
         layout_widget.setAlignment(Qt.AlignCenter)  # Center-align the contents of the layout
 
-        # Create user photo
         user_photo_label = QLabel()
-        profile_pixmap = QPixmap("src/assets/images/profile.png")
-        user_photo_label.setPixmap(
-            profile_pixmap.scaled(36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation)
-        )
+        user_photo_label.setFixedSize(72, 72)
+        user_photo_label.setAlignment(Qt.AlignCenter)
         user_photo_label.setStyleSheet("border-radius: 50%; border: none;")
+
+        # Apply logic to the photo
+        if self.data["user"]["photo"]:
+            icon_path = self.data["user"]["photo"]["path"]
+
+            try:
+                image_data_decoded = base64.b64decode(icon_path)
+
+                pixmap = QPixmap()
+                pixmap.loadFromData(image_data_decoded)
+
+                if not pixmap.isNull():
+                    user_photo_label.setPixmap(pixmap.scaled(
+                        72, 72, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
+                else:
+                    user_photo_label.setPixmap(QPixmap("src/assets/images/profile_user.png"))
+            except:
+                user_photo_label.setPixmap(QPixmap("src/assets/images/profile_user.png"))
+        else:
+            user_photo_label.setPixmap(QPixmap("src/assets/images/profile_user.png"))
 
         # Create the recipe name label
         post_name_label = QLabel(self.data["user"]["name"])
@@ -156,20 +173,16 @@ class Recipe(QWidget):
         layout_widget.addLayout(ingredients_infos)
         layout_widget.addLayout(describe_ingredients_infos)
         
-
         # Add the recipe photo (assuming you have the path to the image)
-
-
-
         encoded_image_data = self.data["photo"]["path"]
-        
+
         if not encoded_image_data.startswith("localhost:3030/statics/"):
             image_data_decoded = base64.b64decode(encoded_image_data)
 
             recipe_photo_label = QLabel()
             recipe_photo_pixmap = QPixmap()
             recipe_photo_pixmap.loadFromData(image_data_decoded)
-            
+
             recipe_photo_label.setFixedSize(589, 393)
             recipe_photo_label.setPixmap(
                 recipe_photo_pixmap.scaled(
@@ -186,14 +199,15 @@ class Recipe(QWidget):
                 error_dialog = ErrorDialog(additional_text="Imagem não carregada!")
                 error_dialog.exec_()
 
-
-            recipe_photo_label.setStyleSheet("border:none;")  # Remove border styling from the photo label
+            recipe_photo_label.setAlignment(Qt.AlignCenter)  # Centralize a imagem dentro do QLabel
+            recipe_photo_label.setStyleSheet("border:none;")  # Remova a estilização da borda do QLabel
 
             # Add the recipe photo label to the layout
-            layout_widget.addWidget(recipe_photo_label, alignment=Qt.AlignCenter)
+            layout_widget.addWidget(recipe_photo_label)
 
         reaction_layout = QHBoxLayout()
         reaction_layout.setSpacing(5)
+        
         reaction_layout.setAlignment(Qt.AlignLeft)
         reaction_layout.setContentsMargins(48, 0, 48, 0)
         # Create the reactions

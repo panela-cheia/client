@@ -1,6 +1,6 @@
 from PySide2.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QScrollArea, QFrame,QSizePolicy
-from PySide2.QtGui import QPixmap
-from PySide2.QtCore import Qt
+from PySide2.QtGui import QPixmap,QIcon
+from PySide2.QtCore import Qt,QSize
 
 import base64
 
@@ -16,41 +16,29 @@ class ProfileWidget(QWidget):
         message = self.app.client.services['adapters.user_profile_adapter'].execute(user_id=self.app.user["user"]["id"])
         
         # First container: User profile picture and information
-        profile_picture = QLabel()
+        profile_picture = QPushButton()
+        profile_picture.setFixedSize(166, 166)
+        profile_picture.setIconSize(QSize(166, 166))
+        profile_picture.setFlat(True)
 
-        if self.app.user.get("photo"):
-            icon_path = self.app.user["photo"]["path"]
+        if self.app.user["user"]["photo"]:
+            icon_path = self.app.user["user"]["photo"]["path"]
 
             try:
                 image_data_decoded = base64.b64decode(icon_path)
 
-                profile_picture.setFixedSize(166, 166)
-                profile_picture.setStyleSheet("border-radius: 50%;")
+                profile_picture.setStyleSheet("border-image: none; border-radius: 50%;")
                 pixmap = QPixmap()
                 pixmap.loadFromData(image_data_decoded)
-                profile_picture.setPixmap(pixmap.scaled(
-                    166, 166, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
-
+                profile_picture.setIcon(QIcon(pixmap))
             except:
-                icon_path = "src/assets/images/profile_user.png"
-                profile_picture = QLabel()
-                profile_picture.setFixedSize(166, 166)
-                #profile_picture.setStyleSheet("border-radius: 50%;")
-                pixmap = QPixmap(icon_path)
-                profile_picture.setPixmap(pixmap.scaled(
-                    166, 166, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
-
+                profile_picture.setIcon(QIcon("src/assets/images/profile_user.png"))
         else:
-            icon_path = "src/assets/images/profile_user.png"
-            profile_picture = QLabel()
-            profile_picture.setFixedSize(166, 166)
-            #profile_picture.setStyleSheet("border-radius: 50%;")
-            pixmap = QPixmap(icon_path)
-            profile_picture.setPixmap(pixmap.scaled(
-                166, 166, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
+            profile_picture.setIcon(QIcon("src/assets/images/profile_user.png"))
 
-        profile_picture.mousePressEvent = self.profile_picture_clicked()
-
+        # Connect the button's clicked signal to a slot
+        profile_picture.clicked.connect(self.profile_picture_clicked)
+  
         username_label = QLabel(message["username"])
         username_label.setStyleSheet("font-family: 'Roboto Slab'; font-style: normal; font-weight: 600; font-size: 24px; color: #341A0F;")
 
