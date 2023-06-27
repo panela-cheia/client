@@ -1,6 +1,8 @@
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
-from PySide2.QtGui import QPixmap, QIcon
+from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Qt
+
+import base64
 
 class RecipeUser(QWidget):
     def __init__(self, data):
@@ -22,13 +24,25 @@ class RecipeUser(QWidget):
         layout.setAlignment(Qt.AlignCenter)  # Center-align the contents of the layout
 
         # Add the recipe photo (assuming you have the path to the image)
-        photo_path = "src/assets/images/recipe.png"
+        photo_path = ""
+        if self.data["photo"]:
+            icon_path = self.data["photo"]["path"]
+            try:
+                image_data_decoded = base64.b64decode(icon_path)
+                pixmap = QPixmap()
+                pixmap.loadFromData(image_data_decoded)
+                photo_path = pixmap.scaled(
+                    192, 192, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation
+                )
+            except:
+                photo_path = "src/assets/images/recipe.png"
+        else:
+            photo_path = "src/assets/images/recipe.png"
+
         recipe_photo_label = QLabel()
-        recipe_photo_pixmap = QPixmap(photo_path)  # Replace with the actual path to the photo
         recipe_photo_label.setFixedSize(192, 192)
-        recipe_photo_label.setPixmap(
-            recipe_photo_pixmap.scaled(recipe_photo_label.size(), Qt.AspectRatioMode.IgnoreAspectRatio,
-                                       Qt.TransformationMode.SmoothTransformation))
+        recipe_photo_label.setPixmap(photo_path)
+
         layout.addWidget(recipe_photo_label, alignment=Qt.AlignCenter)
 
         post_widget.setLayout(layout)
