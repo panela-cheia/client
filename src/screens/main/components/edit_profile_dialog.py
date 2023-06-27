@@ -143,11 +143,11 @@ class EditProfileUserDialog(QDialog):
             "   background-color: #341A0F;"
             "}"
         )
-        edit_button.clicked.connect(lambda: self.handle_edit(name_widget.text(),username_widget.text(),bio_widget.text()))
+        edit_button.clicked.connect(lambda: self.handle_edit(name=name_widget.text(),username=username_widget.text(),bio=bio_widget.text()))
         content_layout.addWidget(edit_button, alignment=Qt.AlignCenter)
 
     def handle_edit(self, name, username, bio):
-
+        print(self.app.user["user"]["bio"])
         final_name = name if name != "" else self.app.user["user"]["name"]
         final_username = username if username != "" else self.app.user["user"]["username"]
         final_bio = bio if bio != "" else self.app.user["user"]["bio"]
