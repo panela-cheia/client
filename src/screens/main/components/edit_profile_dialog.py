@@ -147,10 +147,10 @@ class EditProfileUserDialog(QDialog):
         content_layout.addWidget(edit_button, alignment=Qt.AlignCenter)
 
     def handle_edit(self, name, username, bio):
-        print(self.app.user["user"]["bio"])
         final_name = name if name != "" else self.app.user["user"]["name"]
         final_username = username if username != "" else self.app.user["user"]["username"]
         final_bio = bio if bio != "" else self.app.user["user"]["bio"]
+        final_bio = final_bio if final_bio is not None else ""
 
         self.app.client.services["adapters.update_user_adapter"].execute(id=self.app.user["user"]["id"],name=final_name,username=final_username,bio=final_bio)
      
