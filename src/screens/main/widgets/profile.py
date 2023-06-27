@@ -7,6 +7,7 @@ import base64
 from screens.main.components.recipe_user_component import RecipeUser
 
 from screens.main.components.edit_photo_user_dialog import EditPhotoUserDialog
+from screens.main.components.edit_profile_dialog import EditProfileUserDialog
 
 class ProfileWidget(QWidget):
     def __init__(self,app):
@@ -46,7 +47,7 @@ class ProfileWidget(QWidget):
         edit_button.setFixedSize(100, 30)
         edit_button.setStyleSheet("background-color: #42210B; border-radius: 10px; font-family: 'Roboto Slab'; font-style: normal; font-weight: 600; font-size: 14px; color: #FFFFFF;")
 
-        edit_button.clicked.connect(lambda: self.edit_profile())
+        edit_button.clicked.connect(self.edit_profile)
 
         first_container_layout = QHBoxLayout()
         first_container_layout.addWidget(username_label)
@@ -173,7 +174,8 @@ class ProfileWidget(QWidget):
         self.setLayout(main_layout)
     
     def edit_profile(self):
-        print("edit")
+        dialog = EditProfileUserDialog(parent=self,app=self.app)
+        dialog.exec_()
 
     def profile_picture_clicked(self):
         dialog = EditPhotoUserDialog(parent=self,app=self.app)
