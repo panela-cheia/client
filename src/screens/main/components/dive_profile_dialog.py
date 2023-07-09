@@ -86,14 +86,30 @@ class DiveProfileDialog(QDialog):
         self.setLayout(main_layout)
 
     def enter_dive(self):
-        message = self.app.client.services['adapters.enter_dive_adapter'].execute(userId=self.app.user["user"]["id"], diveId=self.dive["id"])
-        print(message)
+        data = {
+            'userId': self.app.user["user"]["id"],
+            'diveId': self.dive["id"]
+        }
+        
+        message = self.app.webClient.post('/dives/enter_dive', data=json.dumps(data), headers={'Content-Type': 'application/json'})
+        message_data = json.loads(message.text)
+        message_data = message_data["enter_dive"]
+        
+        print(message_data)
 
     def exit_dive(self):
-        # print(self.dive)
+        data = {
+            'userId': self.app.user["user"]["id"],
+            'new_owner': None,
+            'diveId': self.dive["id"]
+        }
+        
         if (self.app.user["user"]["id"] == self.dive["owner_id"]):
             popup = DiveOwnerDialog(app=self.app, dive=self.dive)
             popup.exec_()
         else:           
-            message = self.app.client.services['adapters.exit_dive_adapter'].execute(user=self.app.user["user"]["id"], new_owner=None, diveId=self.dive["id"])        
-            print(message)
+            message = self.app.webClient.put('/dives/exit_dive', data=json.dumps(data), headers={'Content-Type': 'application/json'})
+            message_data = json.loads(message.text)
+            message_data = message_data["exit_dive"]
+            
+            print(message_data)

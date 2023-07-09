@@ -114,5 +114,14 @@ class DiveOwnerDialog(QDialog):
         self.setLayout(self.content_layout)
         
     def transfer_owner(self, new_owner):
-        message = self.app.client.services['adapters.exit_dive_adapter'].execute(user=self.app.user["user"]["id"], new_owner=new_owner, diveId=self.dive["id"])        
-        print(message)
+        data = {
+            'userId': self.app.user["user"]["id"],
+            'new_owner': new_owner,
+            'diveId': self.dive["id"]
+        }
+        
+        message = self.app.webClient.put('/dives/exit_dive', data=json.dumps(data), headers={'Content-Type': 'application/json'})
+        message_data = json.loads(message.text)
+        message_data = message_data["exit_dive"]
+        
+        print(message_data)

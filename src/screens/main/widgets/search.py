@@ -88,10 +88,14 @@ class SearchWidget(QWidget):
         results_layout.addWidget(dive_component)
     
     def search(self, value):
-        response = self.app.client.services["adapters.search_dive_and_users_adapter"].execute(user_id=self.app.user["user"]["id"],search_value=value)
-
-        data = response
-
+        params = {"value": value, "user_id": self.app.user["user"]["id"]}
+        
+        response = self.app.webClient.get('/search', params=params)
+        response_data = json.loads(response.text)
+        data = response_data["search"]
+        
+        # print(data)
+        
         # Limpar as listas existentes
         self.data["dives"] = []
         self.data["users"] = []

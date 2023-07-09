@@ -3,6 +3,7 @@ from PySide2.QtGui import QPixmap,QIcon
 from PySide2.QtCore import Qt
 
 import base64
+import json
 
 from screens.main.components.recipe_user_component import RecipeUser
 
@@ -188,11 +189,25 @@ class OtherUserProfileDialog(QDialog):
         self.setLayout(main_layout)
     
     def follow_user(self):
-        message = self.app.client.services["adapters.follow_user_adapter"].execute(user_id=self.app.user["user"]["id"],follow_id=self.user_id)
-
-        print(message)
+        data = {
+           'userId': self.app.user["user"]["id"],
+           'followId': self.user_id
+        }
+        
+        message = self.app.webClient.post('/users/follow', data=json.dumps(data), headers={'Content-Type': 'application/json'})
+        message_data = json.loads(message.text)
+        message_data = message_data["data"]
+        
+        print(message_data)
     
     def unfollow_user(self):
-        message = self.app.client.services["adapters.unfollow_user_adapter"].execute(user_id=self.app.user["user"]["id"],unfollow_id=self.user_id)
+        data = {
+           'userId': self.app.user["user"]["id"],
+           'unfollowId': self.user_id
+        }
 
-        print(message)
+        message = self.app.webClient.post('/users/unfollow', data=json.dumps(data), headers={'Content-Type': 'application/json'})
+        message_data = json.loads(message.text)
+        message_data = message_data["data"]
+        
+        print(message_data)

@@ -3,7 +3,7 @@ from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Qt,Signal
 
 import base64
-
+import requests
 from screens.main.components.dive_profile_dialog import DiveProfileDialog
 
 class DiveSearchComponent(QWidget):
@@ -21,27 +21,16 @@ class DiveSearchComponent(QWidget):
 
         if self.dive.get("photo"):
             icon_path = self.dive["photo"]["path"]
-            if not icon_path.startswith("localhost:3030/statics/"):
-                image_data_decoded = base64.b64decode(icon_path)
-                
-                icon_label = QLabel()
-                icon_label.setFixedSize(60, 60)
-                icon_label.setStyleSheet("border-radius: 50%;")
-                pixmap = QPixmap()
-                pixmap.loadFromData(image_data_decoded)
-                icon_label.setPixmap(pixmap.scaled(
-                    60, 60, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
-                layout.addWidget(icon_label)
-
-            else:
-                icon_path = "src/assets/images/profile_dive.png"
-                icon_label = QLabel()
-                icon_label.setFixedSize(60, 60)
-                icon_label.setStyleSheet("border-radius: 50%;")
-                pixmap = QPixmap(icon_path)
-                icon_label.setPixmap(pixmap.scaled(
-                    60, 60, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
-                layout.addWidget(icon_label)
+            image_data_decoded = requests.get(icon_path)
+            
+            icon_label = QLabel()
+            icon_label.setFixedSize(60, 60)
+            icon_label.setStyleSheet("border-radius: 50%;")
+            pixmap = QPixmap()
+            pixmap.loadFromData(image_data_decoded.content)
+            icon_label.setPixmap(pixmap.scaled(
+                60, 60, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
+            layout.addWidget(icon_label)
         else:
             icon_path = "src/assets/images/profile_dive.png"
             icon_label = QLabel()
