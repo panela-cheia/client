@@ -4,6 +4,8 @@ from PySide2.QtCore import Qt, QTimer
 
 import base64
 
+import requests
+
 from screens.shared.errors.error_dialog import ErrorDialog
 
 
@@ -42,7 +44,8 @@ class Recipe(QWidget):
             icon_path = self.data["user"]["photo"]["path"]
 
             try:
-                image_data_decoded = base64.b64decode(icon_path)
+                image_data_decoded = requests.get(icon_path)
+                # image_data_decoded = base64.b64decode(icon_path)
 
                 pixmap = QPixmap()
                 pixmap.loadFromData(image_data_decoded)
