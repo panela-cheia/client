@@ -4,6 +4,8 @@ from PySide2.QtCore import Qt
 
 import base64
 
+import requests
+
 class BarnComponent(QFrame):
     def __init__(self, recipe):
         super().__init__()
@@ -44,12 +46,13 @@ class BarnComponent(QFrame):
         if self.recipe.get("photo"):
             icon_path = self.recipe["photo"]["path"]
             if not icon_path.startswith("localhost:3030/statics/"):
-                image_data_decoded = base64.b64decode(icon_path)
+                image_data_decoded = requests.get(icon_path)
+                # image_data_decoded = base64.b64decode(icon_path)
                 
                 icon_label = QLabel()
                 icon_label.setFixedSize(250, 250)
                 pixmap = QPixmap()
-                pixmap.loadFromData(image_data_decoded)
+                pixmap.loadFromData(image_data_decoded.content)
                 icon_label.setPixmap(pixmap.scaled(
                     250, 250, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
                 icon_label.setStyleSheet("border:none;") 
