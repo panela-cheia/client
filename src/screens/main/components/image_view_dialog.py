@@ -124,6 +124,31 @@ class ImageViewDialog(QDialog):
         name_input = QLineEdit()
         form_container_layout.addRow(name_label, name_input)
 
+        dica_label = QLabel("Dica:")
+        dica_label.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
+        dica_input = QLineEdit()
+        dica_button = QPushButton("Adicionar")
+        dica_button.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
+        dica_button.setStyleSheet(
+            "QPushButton {"
+            "   background-color: #42210B;"
+            "   border: none;"
+            "   border-radius: 10px;"
+            "   padding: 10px 20px;"
+            "   font-family: 'Roboto';"
+            "   font-size: 12px;"
+            "   font-weight: 700;"
+            "   color: #FFFFFF;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #42210B;"
+            "}"
+        )
+        dica_button.setFixedWidth(100)
+        dica_button.clicked.connect(lambda: self.add_dica(name=name_input.text(), dica=dica_input))
+        form_container_layout.addRow(dica_label)
+        form_container_layout.addRow(dica_button, dica_input)
+
         description_label = QLabel("Descrição:")
         description_label.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
         description_input = QLineEdit()
@@ -210,3 +235,10 @@ class ImageViewDialog(QDialog):
             if obj["name"] == name:
                 return obj
         return None
+    
+    def add_dica(self, name, dica):
+        param = {'name':name}
+        message = self.app.webClient.get('/recipes/openai/description', params=param)
+        message_data = json.loads(message.text)
+        dica.setText(message_data["description"])
+        # return message_data["description"]

@@ -136,6 +136,20 @@ class Recipe(QWidget):
             "border: none;"
         )
 
+        max_text_length = 45
+
+        # Verificando se o texto excede o tamanho máximo
+        if len(self.data["description"]) > max_text_length:
+            truncated_text = description_name_label.text()[:max_text_length] + "..."
+            description_name_label.setToolTip(self.data["description"])  # Configurar tooltip com o texto completo
+        else:
+            truncated_text = description_name_label.text()
+
+        description_name_label.setText(truncated_text)
+
+        # Configurando a dica de ferramenta para exibir o texto completo
+        description_name_label.setMouseTracking(True)
+
         ingredients_infos = QHBoxLayout()
         ingredients_infos.setContentsMargins(0, 0, 0, 0)
         ingredients_infos.setAlignment(Qt.AlignLeft)

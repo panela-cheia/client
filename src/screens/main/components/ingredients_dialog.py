@@ -30,7 +30,7 @@ class IngredientsDialog(QDialog):
             "   padding: 20px;"
             "}"
         )
-        self.setFixedSize(640, 640)
+        self.setFixedSize(640, 840)
 
         # Create the main layout
         main_layout = QVBoxLayout(self)
@@ -43,7 +43,7 @@ class IngredientsDialog(QDialog):
         header_layout.setContentsMargins(0, 0, 0, 0)
 
         # Add the title label to the header
-        title_label = QLabel("Ingredients")
+        title_label = QLabel("Ingredientes")
         title_label.setStyleSheet("font-family: 'Roboto Slab'; font-weight: 900; font-size: 32px; color: #341A0F;")
         title_label.setAlignment(Qt.AlignCenter)
         header_layout.addWidget(title_label, alignment=Qt.AlignCenter)
@@ -76,6 +76,24 @@ class IngredientsDialog(QDialog):
         main_container_layout = QVBoxLayout(main_container)
         main_container_layout.setSpacing(20)
 
+        # Create the scroll area for the added items
+        dica_button = QPushButton("Sugestão de Ingredientes")
+        dica_button.setStyleSheet("QPushButton {"
+            "   background-color: #42210B;"
+            "   border: none;"
+            "   border-radius: 10px;"
+            "   padding: 10px 20px;"
+            "   font-family: 'Roboto';"
+            "   font-size: 12px;"
+            "   font-weight: 700;"
+            "   color: #FFFFFF;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #42210B;"
+            "}"
+        )
+        dica_button.setFixedWidth(300)
+        dica_button.clicked.connect(lambda: self.suggest_dica(name=name, description=description))
         # Create the input fields
         self.name_input = QLineEdit()
         self.name_input.setPlaceholderText("Nome do Ingrediente")
@@ -124,6 +142,7 @@ class IngredientsDialog(QDialog):
         self.scroll_layout.setSpacing(10)
 
         # Add the widgets to the main container layout
+        main_container_layout.addWidget(dica_button, alignment=Qt.AlignCenter)
         main_container_layout.addWidget(self.name_input)
         main_container_layout.addWidget(self.amount_input)
         main_container_layout.addWidget(self.unit_combobox)
@@ -210,7 +229,8 @@ class IngredientsDialog(QDialog):
             delete_button.setIcon(delete_button_icon)
             delete_button.setIconSize(QSize(24, 24))
             delete_button.setContentsMargins(0, 0, 0, 0)
-            delete_button.clicked.connect(lambda: self.delete_item(item_widget))
+            if item_widget is not None:
+                delete_button.clicked.connect(lambda: self.delete_item(item_widget))
 
             # Add the labels container and the delete button to the main container layout
             container_layout.addWidget(labels_container)
@@ -260,3 +280,11 @@ class IngredientsDialog(QDialog):
             self.close()
         except ValueError as e:
             print(e)
+    
+    def suggest_dica(self, name, description):
+        param = {'name':name, 'description':description}
+        message = self.app.webClient.get('/recipes/openai/ingredients', params=param)
+        message_data = json.loads(message.text)
+        for item in message_data["ingredients"]:
+            self.add_item(item["name"], str(item["amount"]), item["unit"])
+        print(message_data)
