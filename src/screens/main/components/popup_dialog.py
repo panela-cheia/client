@@ -1,5 +1,5 @@
 import os
-import base64
+import json
 
 from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QFrame, QFileDialog
 from PySide2.QtGui import QIcon, QPixmap
@@ -127,17 +127,15 @@ class PopupDialog(QDialog):
         file_dialog.setNameFilter("Images (*.png *.xpm *.jpg *.bmp)")
         if file_dialog.exec_():
             file_path = file_dialog.selectedFiles()[0]
-            name = os.path.basename(file_path)
+            name = os.path.abspath(file_path)
 
-            with open(file_path, "rb") as file:
-                image_data = base64.b64encode(file.read()).decode("utf-8")
+            files = {'file': open(name, 'rb')}
 
-            # Fazer chamada ao objeto serial usando RMI
-            # Cria um novo proxy dentro da thread atual
-            create_file_adapter = self.app.client.services['adapters.create_file_adapter']
-            response = create_file_adapter.execute(name=name, path=image_data)
+            response = self.app.webClient.post('/files', files=files)
 
-            self.handle_image_upload(response=response)
+            image_data = json.loads(response.text)
+            
+            self.handle_image_upload(response=image_data)
 
 
     def handle_image_upload(self, response):  # Adicionar o parâmetro file_path

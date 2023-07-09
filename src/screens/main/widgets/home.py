@@ -1,7 +1,4 @@
-import json
-
 from PySide2.QtWidgets import QScrollArea,QVBoxLayout, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QFrame,QSpacerItem, QSizePolicy
-from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt
 
 from screens.main.components.popup_dialog import PopupDialog

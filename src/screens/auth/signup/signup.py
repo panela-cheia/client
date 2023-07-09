@@ -127,9 +127,18 @@ class SignupWindow(QWidget):
         layout.addWidget(left_container, 1)
 
     def submit(self, name,username,email, password):
-        response = self.app.client.services["adapters.create_user_adapter"].execute(name=name,username=username,email=email,password=password)
+        data = {
+            'name':name,
+            'username':username,
+            'email': email,
+            'password': password
+        }
 
-        if not response:
+        response = self.app.webClient.post('/users', data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        response_data = json.loads(response.text)
+        response_data = response_data["data"]
+
+        if not response_data:
             return None
         else:
             self.openSignIn()

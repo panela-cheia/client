@@ -1,10 +1,10 @@
-from PySide2.QtWidgets import QApplication, QDialog, QLabel, QLineEdit, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QGroupBox, QFormLayout
+from PySide2.QtWidgets import QDialog, QLabel, QLineEdit, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QGroupBox, QFormLayout
 from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt
 
 from screens.main.components.ingredients_dialog import IngredientsDialog
 
-import base64
+import requests
 
 from screens.shared.errors.error_dialog import ErrorDialog
 
@@ -79,14 +79,12 @@ class ImageViewDialog(QDialog):
         content_layout = QVBoxLayout(content_frame)
         content_layout.setContentsMargins(0, 0, 0, 0)
 
-        encoded_image_data = image_path["path"]
-        image_data_decoded = base64.b64decode(encoded_image_data)
-
         # Create the image label
         image_label = QLabel()
         image_pixmap = QPixmap()
-        image_pixmap.loadFromData(image_data_decoded)
-        # image_pixmap = QPixmap(image_data_decoded)
+        response = requests.get(image_path["path"])
+        image_pixmap.loadFromData(response.content)
+
 
         # Exibe a imagem
         if not image_pixmap.isNull():
