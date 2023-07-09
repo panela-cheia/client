@@ -122,22 +122,23 @@ class HomeWidget(QMainWindow):
 
     def react(self,recipe_id,type):
         data = {
-            'recipe_id':recipe_id,
+            'user_id':self.app.user["user"]["id"],
             'type':type
         }
-
-        message = self.app.webClient.put('/recipes/<id>/react', data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        path = "/recipes/"+ str(recipe_id) +"/react"
+        message = self.app.webClient.put(path, data=json.dumps(data),headers={'Content-Type': 'application/json'})
         message_data = json.loads(message.text)
         message_data = message_data["data"]
         # message = self.app.client.services["adapters.reaction_recipe_adapter"].execute(type=type,recipe_id=recipe_id,user_id=self.app.user["user"]["id"])
-        print(message)
+        print(message_data)
 
     def save_recipe(self,recipe_id):
         data = {
-            'recipe_id':recipe_id
+            'recipeId':recipe_id,
+            'barnId':self.app.user["user"]["barnId"]
         }
-        message = self.app.webClient.put('/barn/save', data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        message = self.app.webClient.post('/barn/save', data=json.dumps(data),headers={'Content-Type': 'application/json'})
         message_data = json.loads(message.text)
-        message_data = message_data["data"]
+        message_data = message_data["user"]
         # message = self.app.client.services["adapters.save_recipe_adapter"].execute(barnId=self.app.user["user"]["barnId"],recipeId=recipe_id)
-        print(message)
+        print(message_data)
