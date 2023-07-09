@@ -9,9 +9,10 @@ class WebClient:
         response = requests.get(url, params=params)
         return response
 
-    def put(self, path, data=None):
+    def put(self, path,headers=None,data=None):
         url = self.base_url + path
-        response = requests.put(url, data=data)
+        
+        response = requests.put(url, data=data,headers=headers)
         return response
 
     def delete(self, path):

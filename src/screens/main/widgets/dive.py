@@ -4,6 +4,8 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushBu
 from screens.main.components.popup_dive import PopupDive
 from screens.main.components.dive_component import DiveComponent
 
+import json
+
 class DiveWidget(QWidget):
     def __init__(self,app):
         super().__init__()
@@ -68,12 +70,14 @@ class DiveWidget(QWidget):
         max_dives_per_row = 2
         row_layout = None
 
-        message = self.app.client.services['adapters.list_users_adapter'].execute(userId=self.app.user["user"]["id"])
+        path_url = '/dives/list_dives/' + self.app.user["user"]["id"]
 
-        # data = json.loads(message)
+        response = self.app.webClient.get(path_url)
+        response_data = json.loads(response.text)
+        response_data = response_data["list_dives"]
 
-        if len(message) > 0:
-            for index, dive in enumerate(message):
+        if len(response_data) > 0:
+            for index, dive in enumerate(response_data):
                 if index % max_dives_per_row == 0:
                     row_layout = QHBoxLayout()
                     feed_container_layout.addLayout(row_layout)
@@ -92,6 +96,15 @@ class DiveWidget(QWidget):
         popup.exec_()
 
     def handle_create_dive(self,name,description,file):
-        message = self.app.client.services['adapters.create_dive_adapter'].execute(name=name, description=description, fileId=file["id"], userId=self.app.user["user"]["id"])
+        data = {
+            'name':name,
+            'description':description,
+            'fileId': file["id"],
+            'userId': self.app.user["user"]["id"]
+        }
+        
+        response = self.app.webClient.post('/dives', data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        response_data = json.loads(response.text)
+        response_data = response_data["create_dive"]
 
-        return message
+        return response_data

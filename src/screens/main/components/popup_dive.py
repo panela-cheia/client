@@ -1,41 +1,13 @@
 import os
 import json
 import base64
+import requests
 
 from PySide2.QtWidgets import QFrame, QDialog, QMessageBox, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QSizePolicy
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt,QThread,Signal
 
 from screens.shared.errors.error_dialog import ErrorDialog  
-
-class ImageUploadThread(QThread):
-    image_uploaded = Signal(str)  # Adicionado novo parâmetro para file_path
-
-    def __init__(self, file_path, app):
-        super().__init__()
-        self.file_path = file_path
-        self.app = app
-
-    def run(self):
-        name = os.path.basename(self.file_path)
-
-        with open(self.file_path, "rb") as file:
-            image_data = file.read()
-
-        # Codifica os dados da imagem em Base64
-        encoded_image_data = base64.b64encode(image_data).decode("utf-8")
-
-        message = self.app.client.services['adapters.create_file_adapter'].execute(name=name, path=encoded_image_data)
-        
-        # message = {
-        #     "topic": "@file/create_file",
-        #     "body": {
-        #         "name": name,
-        #         "path": encoded_image_data
-        #     }
-        # }
-
-        self.image_uploaded.emit(json.dumps(message))  # Emitir também o file_path
 
 class PopupDive(QDialog):
     def __init__(self,app,handle_create_dive):
@@ -63,9 +35,7 @@ class PopupDive(QDialog):
             "}"
         )
         self.setFixedSize(640, 640)
-        
-        
-        
+                
         layout = QVBoxLayout(self)
         
         # Create the header frame
@@ -273,15 +243,15 @@ class PopupDive(QDialog):
         
         if file_dialog.exec_():
             file_path = file_dialog.selectedFiles()[0]
-            name = os.path.basename(file_path)
+            name = os.path.abspath(file_path)
 
-            with open(file_path, "rb") as file:
-                image_data = base64.b64encode(file.read()).decode("utf-8")
+            files = {'file': open(name, 'rb')}
 
-            create_file_adapter = self.app.client.services['adapters.create_file_adapter']
-            response = create_file_adapter.execute(name=name, path=image_data)
+            response = self.app.webClient.post('/files', files=files)
+
+            image_data = json.loads(response.text)
             
-            self.handle_image_upload(response=response)
+            self.handle_image_upload(response=image_data)
 
     def handle_image_upload(self, response):
     
@@ -290,13 +260,12 @@ class PopupDive(QDialog):
         
         # Verifica se a imagem foi carregada com sucesso
         if "path" in file:
-            encoded_image_data = file["path"]
-            image_data_decoded = base64.b64decode(encoded_image_data)
+            response = requests.get(file["path"])
         
             # Cria o QLabel para exibir a imagem
             image_label = QLabel()
             image_pixmap = QPixmap()
-            image_pixmap.loadFromData(image_data_decoded)
+            image_pixmap.loadFromData(response.content)
             
             # Exibe a imagem
             if not image_pixmap.isNull():
