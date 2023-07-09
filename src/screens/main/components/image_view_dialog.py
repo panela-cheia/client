@@ -5,6 +5,7 @@ from PySide2.QtCore import Qt
 from screens.main.components.ingredients_dialog import IngredientsDialog
 
 import requests
+import json
 
 from screens.shared.errors.error_dialog import ErrorDialog
 
@@ -13,7 +14,11 @@ class ImageViewDialog(QDialog):
         super().__init__()
         self.app = app
 
-        message = self.app.client.services['adapters.list_users_adapter'].execute(userId=self.app.user["user"]["id"])
+        path_url = '/dives/list_dives/' + self.app.user["user"]["id"]
+
+        response = self.app.webClient.get(path_url)
+        response_data = json.loads(response.text)
+        message = response_data["list_dives"]
 
         self.setWindowTitle("Imagem Selecionada")
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)

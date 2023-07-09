@@ -83,9 +83,11 @@ class IngredientsDialog(QDialog):
         self.amount_input = QLineEdit()
         self.amount_input.setPlaceholderText("Quantidade")
 
-        message = self.app.client.services['adapters.list_ingredients_unit_adapter'].execute()
+        response = self.app.webClient.get("/list_ingredients_unit")
+        response_data = json.loads(response.text)
+        response_data = response_data["list_ingredients_unit"]
 
-        units = message
+        units = response_data
 
         # Create the select field
         self.unit_combobox = QComboBox()
@@ -239,15 +241,22 @@ class IngredientsDialog(QDialog):
             item_widget.deleteLater()
 
     def submit(self, name, description, dive, image_path):
-        response = self.app.client.services['adapters.create_recipe_adapter'].execute(
-            name=name,
-            description=description,
-            ingredients=self.items,
-            userId=self.app.user["user"]["id"],
-            fileId=image_path["id"],
-            diveId=dive
-        )
+        data = {
+            'name':name,
+            'description':description,
+            'ingredients': self.items,
+            'userId': self.app.user["user"]["id"],
+            'fileId':image_path["id"],
+            'diveId':dive
+        }
+        
+        try:
+            response = self.app.webClient.post('/recipes', data=json.dumps(data),headers={'Content-Type': 'application/json'})
+            response_data = json.loads(response.text)
+            response_data = response_data["data"]
 
-        print(response)
+            print(response_data)
 
-        self.close()
+            self.close()
+        except ValueError as e:
+            print(e)
