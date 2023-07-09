@@ -1,6 +1,8 @@
 from PySide2.QtWidgets import QApplication
 
-from infra.client.client import Client
+from infra.middleware.rmi import RMI
+from infra.web.web_client import WebClient
+
 from screens.auth.auth import AuthWindow
 from screens.main.main import MainWindow
 
@@ -9,7 +11,8 @@ from screens.shared.errors.error_dialog import ErrorDialog
 class App(QApplication):
     def __init__(self, argv):
         super().__init__(argv)
-        self.client = None # Instancie o cliente de socket aqui
+        self.client = None # Instancie o cliente de rmi aqui
+        self.webClient = None
         self.login_state = False  # Estado de autenticação inicial
         self.user = None
 
@@ -23,8 +26,9 @@ class App(QApplication):
         self.main_window = MainWindow(self)
         self.main_window.show()
 
-    def Boostrap(self,client:Client):
+    def Boostrap(self,client:RMI,webClient:WebClient):
         self.client = client
+        self.webClient = webClient
 
         if self.login_state:
             self.show_main_window()

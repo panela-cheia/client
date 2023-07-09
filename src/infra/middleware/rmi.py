@@ -36,7 +36,7 @@ const_adapters_list = [
     "adapters.search_dive_and_users_adapter"
 ]
 
-class Client:
+class RMI:
     def __init__(self):
         self.adapters = const_adapters_list  # List of adapters
         
