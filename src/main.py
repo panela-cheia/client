@@ -9,5 +9,5 @@ from infra.web.web_client import WebClient
 
 if __name__ == "__main__":
     app = App(sys.argv)
-    app.Boostrap(client=RMI(),webClient=WebClient(host=API_URL))
+    app.Boostrap(client=RMI(),webClient=WebClient(base_url=API_URL))
     sys.exit(app.exec_())

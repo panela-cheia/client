@@ -1,3 +1,5 @@
+import json
+
 from PySide2.QtWidgets import QApplication
 
 from infra.middleware.rmi import RMI
@@ -39,19 +41,27 @@ class App(QApplication):
         print("até logo")
 
     def login(self,email,password):
-        response = self.client.services['adapters.user_login_adapter'].execute(email=email,password=password)
 
-        if not response:
+        data = {
+            'email': email,
+            'password': password
+        }
+
+        response = self.webClient.post('/users/login', data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        response_data = json.loads(response.text)
+        response_data = response_data["data"]
+
+        if not response_data:
             return None
         else:
 
-            if "error" in response:
+            if "error" in response_data:
                 error_dialog = ErrorDialog()
                 error_dialog.exec_()
             else:
                 data = {
-                    "user":response["user"],
-                    "token":response["token"]
+                    "user":response_data["user"],
+                    "token":response_data["token"]
                 }
 
                 self.login_state = True
