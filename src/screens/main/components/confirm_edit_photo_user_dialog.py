@@ -2,7 +2,8 @@ from PySide2.QtWidgets import QApplication, QDialog, QLabel, QLineEdit, QComboBo
 from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt
 
-import base64
+import json
+import requests
 
 from screens.shared.errors.error_dialog import ErrorDialog
 
@@ -10,8 +11,6 @@ class ConfirmEditPhotoUserDialog(QDialog):
     def __init__(self,app, image_path):
         super().__init__()
         self.app = app
-
-        #message = self.app.client.services['adapters.list_users_adapter'].execute(userId=self.app.user["user"]["id"])
 
         self.setWindowTitle("Foto Selecionada")
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
@@ -78,12 +77,12 @@ class ConfirmEditPhotoUserDialog(QDialog):
         content_layout.setContentsMargins(0, 0, 0, 0)
 
         encoded_image_data = image_path["path"]
-        image_data_decoded = base64.b64decode(encoded_image_data)
+        image_data_decoded = requests.get(encoded_image_data)
 
         # Create the image label
         image_label = QLabel()
         image_pixmap = QPixmap()
-        image_pixmap.loadFromData(image_data_decoded)
+        image_pixmap.loadFromData(image_data_decoded.content)
 
         # Exibe a imagem
         if not image_pixmap.isNull():
@@ -155,15 +154,30 @@ class ConfirmEditPhotoUserDialog(QDialog):
         main_layout.addWidget(content_frame)
 
     def submit(self, image_path):
-        file_id = image_path["id"]
+        data = {
+            "id": self.app.user["user"]["id"],
+            "photo": image_path["id"]
+        }
 
-        self.app.client.services["adapters.update_photo_user_adapter"].execute(id=self.app.user["user"]["id"],photo=file_id)
-     
+        response = self.app.webClient.put('/users/update_photo_user', data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        response_data = json.loads(response.text)
+        response_data = response_data["user"]
+
+        profile_path = "/users/user_profile/" + self.app.user["user"]["id"]
+
+        profile = self.app.webClient.get(profile_path)
+        profile_data = json.loads(profile.text)
+        profile_data = profile_data["user"]
+
+        self.app.user["user"]["photo"] = profile_data["photo"]
+        
         self.close()
 
     def delete_photo(self, image_path):
-        file_id = image_path["id"]
+        file_name = image_path["name"]
 
-        self.app.client.services["adapters.delete_file_adapter"].execute(id=file_id)
+        path = "/files/" + file_name
+
+        self.app.webClient.delete(path)
 
         self.close()

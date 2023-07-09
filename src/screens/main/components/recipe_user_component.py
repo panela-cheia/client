@@ -2,7 +2,7 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Qt
 
-import base64
+import requests
 
 class RecipeUser(QWidget):
     def __init__(self, data):
@@ -28,9 +28,9 @@ class RecipeUser(QWidget):
         if self.data["photo"]:
             icon_path = self.data["photo"]["path"]
             try:
-                image_data_decoded = base64.b64decode(icon_path)
+                image_data_decoded = requests.get(icon_path)
                 pixmap = QPixmap()
-                pixmap.loadFromData(image_data_decoded)
+                pixmap.loadFromData(image_data_decoded.content)
                 photo_path = pixmap.scaled(
                     192, 192, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation
                 )

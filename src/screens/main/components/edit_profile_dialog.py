@@ -7,6 +7,8 @@ from PySide2.QtCore import Qt
 
 from screens.main.components.confirm_edit_photo_user_dialog import ConfirmEditPhotoUserDialog
 
+import json
+
 class EditProfileUserDialog(QDialog):
     def __init__(self, app, parent=None):
         super().__init__(parent)
@@ -152,6 +154,26 @@ class EditProfileUserDialog(QDialog):
         final_bio = bio if bio != "" else self.app.user["user"]["bio"]
         final_bio = final_bio if final_bio is not None else ""
 
-        self.app.client.services["adapters.update_user_adapter"].execute(id=self.app.user["user"]["id"],name=final_name,username=final_username,bio=final_bio)
+        data = {
+            "name":final_name,
+            "username":final_username,
+            "bio":final_bio
+        }
+
+        path = "/users/" + self.app.user["user"]["id"] + "/update_profile"
+
+        response = self.app.webClient.put(path, data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        response_data = json.loads(response.text)
+        response_data = response_data["user"]
+
+        profile_path = "/users/user_profile/" + self.app.user["user"]["id"]
+
+        profile = self.app.webClient.get(profile_path)
+        profile_data = json.loads(profile.text)
+        profile_data = profile_data["user"]
+
+        self.app.user["user"]["name"] = profile_data["name"]
+        self.app.user["user"]["username"] = profile_data["username"]
+        self.app.user["user"]["bio"] = profile_data["bio"]
      
         self.close()

@@ -46,7 +46,7 @@ class Recipe(QWidget):
                 # image_data_decoded = base64.b64decode(icon_path)
 
                 pixmap = QPixmap()
-                pixmap.loadFromData(image_data_decoded)
+                pixmap.loadFromData(image_data_decoded.content)
 
                 if not pixmap.isNull():
                     user_photo_label.setPixmap(pixmap.scaled(

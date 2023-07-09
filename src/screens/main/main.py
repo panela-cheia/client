@@ -9,7 +9,7 @@ from screens.main.widgets.barn import BarnWidget
 from screens.main.widgets.container import WidgetContainer
 from screens.main.widgets.profile import ProfileWidget
 
-import base64
+import requests
 
 anchors = [
     {
@@ -197,11 +197,11 @@ class MainWindow(QMainWindow):
             icon_path = self.app.user["user"]["photo"]["path"]
 
             try:
-                image_data_decoded = base64.b64decode(icon_path)
+                image_data_decoded = requests.get(icon_path)
 
                 profile_image.setStyleSheet("border-radius: 50%;")
                 pixmap = QPixmap()
-                pixmap.loadFromData(image_data_decoded)
+                pixmap.loadFromData(image_data_decoded.content)
                 profile_image.setPixmap(pixmap.scaled(
                     36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
             except:

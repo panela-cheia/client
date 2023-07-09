@@ -2,7 +2,7 @@ from PySide2.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushBu
 from PySide2.QtGui import QPixmap,QIcon
 from PySide2.QtCore import Qt,QSize
 
-import base64
+import requests
 
 from screens.main.components.recipe_user_component import RecipeUser
 
@@ -26,11 +26,11 @@ class ProfileWidget(QWidget):
             icon_path = self.app.user["user"]["photo"]["path"]
 
             try:
-                image_data_decoded = base64.b64decode(icon_path)
+                image_data_decoded = requests.get(icon_path)
 
                 profile_picture.setStyleSheet("border-image: none; border-radius: 50%;")
                 pixmap = QPixmap()
-                pixmap.loadFromData(image_data_decoded)
+                pixmap.loadFromData(image_data_decoded.content)
                 profile_picture.setIcon(QIcon(pixmap))
             except:
                 profile_picture.setIcon(QIcon("src/assets/images/profile_user.png"))
