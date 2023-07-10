@@ -5,6 +5,8 @@ from PySide2.QtCore import Qt
 import base64
 import json
 
+import requests
+
 from screens.main.components.recipe_user_component import RecipeUser
 
 class OtherUserProfileDialog(QDialog):
@@ -30,10 +32,10 @@ class OtherUserProfileDialog(QDialog):
             icon_path = data["photo"]["path"]
 
             try:
-                image_data_decoded = base64.b64decode(icon_path)
+                image_data_decoded = requests.get(icon_path)
 
                 pixmap = QPixmap()
-                pixmap.loadFromData(image_data_decoded)
+                pixmap.loadFromData(image_data_decoded.content)
 
                 if not pixmap.isNull():
                     profile_picture.setPixmap(pixmap.scaled(
