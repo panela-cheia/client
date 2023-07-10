@@ -1,8 +1,7 @@
 import json
 
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QHBoxLayout, QPushButton, QVBoxLayout, QFrame, QLineEdit
-from PySide2.QtGui import QPixmap, QIcon
-from PySide2.QtCore import Qt,QSize
+from PySide2.QtGui import QIcon
 
 from screens.main.components.barn_component import BarnComponent
 
@@ -88,25 +87,18 @@ class BarnWidget(QWidget):
         self.scroll_area.setWidget(self.feed_container)
 
     def fetch_all_items(self):
-        message = {
-            "topic": "@barn/search_recipe_barn",
-            "body": {
-                "id": self.app.user["user"]["barnId"],
-                "name":""
-            }
-        }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        data = json.loads(message)
+        params = {"barn": self.app.user["user"]["barnId"], "recipe": ""}
+        message = self.app.webClient.get('/barn/search', params=params)
+        message_data = json.loads(message.text)
+        message_data = message_data['user']
+        # message = self.app.client.services["adapters.search_recipe_barn_adapter"].execute(barnId=self.app.user["user"]["barnId"],recipeName="")
+        # data = json.loads(message)
 
         # Add recipe posts dynamically (replace with your own logic)
         max_recipes_per_row = 3
         row_layout = None
 
-        for i, recipe in enumerate(data):
+        for i, recipe in enumerate(message_data): #data
             if i % max_recipes_per_row == 0:
                 row_layout = QHBoxLayout()
                 self.feed_container_layout.addLayout(row_layout)
@@ -121,20 +113,15 @@ class BarnWidget(QWidget):
         self.clear_search_results()
 
         value = self.input_widget.text()
+        params = {"barn": self.app.user["user"]["barnId"], "recipe": value}
+        message = self.app.webClient.get('/barn/search', params=params)
+        message_data = json.loads(message.text)
+        message_data = message_data['user']
+        # message = self.app.client.services["adapters.search_recipe_barn_adapter"].execute(barnId=self.app.user["user"]["barnId"],recipeName=value)
 
-        message = {
-            "topic": "@barn/search_recipe_barn",
-            "body": {
-                "id": self.app.user["user"]["barnId"],
-                "name": value
-            }
-        }
+        print(message_data)
 
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        data = json.loads(message)
+        data = message_data
 
         # Add recipe posts dynamically (replace with your own logic)
         max_recipes_per_row = 3

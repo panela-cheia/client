@@ -1,8 +1,10 @@
-from PySide2.QtWidgets import QApplication
 import json
 
+from PySide2.QtWidgets import QApplication
 
-from infra.client.client import Client
+from infra.middleware.rmi import RMI
+from infra.web.web_client import WebClient
+
 from screens.auth.auth import AuthWindow
 from screens.main.main import MainWindow
 
@@ -11,7 +13,8 @@ from screens.shared.errors.error_dialog import ErrorDialog
 class App(QApplication):
     def __init__(self, argv):
         super().__init__(argv)
-        self.client = None # Instancie o cliente de socket aqui
+        self.client = None # Instancie o cliente de rmi aqui
+        self.webClient = None
         self.login_state = False  # Estado de autenticação inicial
         self.user = None
 
@@ -25,9 +28,9 @@ class App(QApplication):
         self.main_window = MainWindow(self)
         self.main_window.show()
 
-    def Boostrap(self,client:Client):
+    def Boostrap(self,client:RMI,webClient:WebClient):
         self.client = client
-        self.client.connect()
+        self.webClient = webClient
 
         if self.login_state:
             self.show_main_window()
@@ -36,30 +39,30 @@ class App(QApplication):
 
     def finish(self):
         print("até logo")
-        self.client.close()
 
     def login(self,email,password):
-        message = {
-            "topic": "@user/login_with_email_user",
-            "body": {
-                "email": email,
-                "password": password
-            }
+
+        data = {
+            'email': email,
+            'password': password
         }
 
-        message = json.dumps(message)
-        self.client.send(message=message)
-        message = self.client.read()
+        response = self.webClient.post('/users/login', data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        response_data = json.loads(response.text)
+        response_data = response_data["data"]
 
-        if not message:
+        if not response_data:
             return None
         else:
 
-            if "error" in message:
+            if "error" in response_data:
                 error_dialog = ErrorDialog()
                 error_dialog.exec_()
             else:
-                data = json.loads(message)
+                data = {
+                    "user":response_data["user"],
+                    "token":response_data["token"]
+                }
 
                 self.login_state = True
                 self.user = data

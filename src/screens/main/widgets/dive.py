@@ -69,22 +69,15 @@ class DiveWidget(QWidget):
         # Add dive posts dynamically (replace with your own logic)
         max_dives_per_row = 2
         row_layout = None
-    
-        message = {
-            "topic": "@dive/users_dive",
-            "body": {
-                "user_id": self.app.user["user"]["id"],
-            }
-        }
 
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
+        path_url = '/dives/list_dives/' + self.app.user["user"]["id"]
 
-        data = json.loads(message)
+        response = self.app.webClient.get(path_url)
+        response_data = json.loads(response.text)
+        response_data = response_data["list_dives"]
 
-        if len(data) > 0:
-            for index, dive in enumerate(data):
+        if len(response_data) > 0:
+            for index, dive in enumerate(response_data):
                 if index % max_dives_per_row == 0:
                     row_layout = QHBoxLayout()
                     feed_container_layout.addLayout(row_layout)
@@ -103,17 +96,15 @@ class DiveWidget(QWidget):
         popup.exec_()
 
     def handle_create_dive(self,name,description,file):
-        message={
-            "topic": "@dive/create_dive",
-            "body": {
-                "name": name,
-                "description": description,
-                "fileId": file["id"],
-                "userId": self.app.user["user"]["id"]
-            }
+        data = {
+            'name':name,
+            'description':description,
+            'fileId': file["id"],
+            'userId': self.app.user["user"]["id"]
         }
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
+        
+        response = self.app.webClient.post('/dives', data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        response_data = json.loads(response.text)
+        response_data = response_data["create_dive"]
 
-        return message
+        return response_data

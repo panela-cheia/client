@@ -2,7 +2,10 @@ from PySide2.QtWidgets import QWidget,QDialog, QLabel, QVBoxLayout, QHBoxLayout,
 from PySide2.QtGui import QPixmap,QIcon
 from PySide2.QtCore import Qt
 
+import base64
 import json
+
+import requests
 
 from screens.main.components.recipe_user_component import RecipeUser
 
@@ -12,28 +15,38 @@ class OtherUserProfileDialog(QDialog):
         self.app = app
         self.user_id = user_id
 
-        message = {
-            "topic": "@user/profile_user",
-            "body": {
-                "user_id": user_id,
-            }
-        }
-        
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
+        response = self.app.client.services["adapters.user_profile_adapter"].execute(user_id=user_id)
 
-        data = json.loads(message)
+        data = response
 
         self.setFixedSize(924, 640)
         self.setWindowTitle(data["name"])
 
         # First container: User profile picture and information
         profile_picture = QLabel()
-        profile_pixmap = QPixmap("src/assets/images/profile-2.png")  # Substitua pelo caminho real da imagem de perfil
-        profile_picture.setPixmap(profile_pixmap.scaledToWidth(166))
         profile_picture.setFixedSize(166, 166)
         profile_picture.setStyleSheet("border-radius: 50%;")
+
+        # Apply logic to the photo
+        if data["photo"]:
+            icon_path = data["photo"]["path"]
+
+            try:
+                image_data_decoded = requests.get(icon_path)
+
+                pixmap = QPixmap()
+                pixmap.loadFromData(image_data_decoded.content)
+
+                if not pixmap.isNull():
+                    profile_picture.setPixmap(pixmap.scaled(
+                        166, 166, Qt.AspectRatioMode.KeepAspectRatio, Qt.SmoothTransformation))
+                else:
+                    profile_picture.setPixmap(QPixmap("src/assets/images/profile_user.png"))
+            except:
+                profile_picture.setPixmap(QPixmap("src/assets/images/profile_user.png"))
+        else:
+            profile_picture.setPixmap(QPixmap("src/assets/images/profile_user.png"))
+
 
         username_label = QLabel(data["username"])
         username_label.setStyleSheet("font-family: 'Roboto Slab'; font-style: normal; font-weight: 600; font-size: 24px; color: #341A0F;")
@@ -178,31 +191,25 @@ class OtherUserProfileDialog(QDialog):
         self.setLayout(main_layout)
     
     def follow_user(self):
-        message = {
-            "topic": "@user/follow_user",
-            "body": {
-                "user_id": self.app.user["user"]["id"],
-                "follow_id": self.user_id
-            }
+        data = {
+           'userId': self.app.user["user"]["id"],
+           'followId': self.user_id
         }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        print(message)
+        
+        message = self.app.webClient.post('/users/follow', data=json.dumps(data), headers={'Content-Type': 'application/json'})
+        message_data = json.loads(message.text)
+        message_data = message_data["data"]
+        
+        print(message_data)
     
     def unfollow_user(self):
-        message = {
-            "topic": "@user/unfollow_user",
-            "body": {
-                "user_id": self.app.user["user"]["id"],
-                "unfollow_id": self.user_id
-            }
+        data = {
+           'userId': self.app.user["user"]["id"],
+           'unfollowId': self.user_id
         }
 
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        print(message)
+        message = self.app.webClient.post('/users/unfollow', data=json.dumps(data), headers={'Content-Type': 'application/json'})
+        message_data = json.loads(message.text)
+        message_data = message_data["data"]
+        
+        print(message_data)

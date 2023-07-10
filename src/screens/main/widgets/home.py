@@ -1,11 +1,10 @@
-import json
-
 from PySide2.QtWidgets import QScrollArea,QVBoxLayout, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QFrame,QSpacerItem, QSizePolicy
-from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt
 
 from screens.main.components.popup_dialog import PopupDialog
 from screens.main.components.recipe_component import Recipe
+
+import json
 
 class HomeWidget(QMainWindow):
     def __init__(self,app):
@@ -81,20 +80,13 @@ class HomeWidget(QMainWindow):
         max_recipes_per_row = 1
         row_layout = None
 
-        message = {
-            "topic": "@recipe/list_recipe",
-            "body": {
-            }
-        }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        recipes = json.loads(message)
+        # recipes = self.app.client.services['adapters.list_recipe_adapter'].execute()
+        recipes = self.app.webClient.get('/recipes')
+        recipes = json.loads(recipes.text)
+        recipes_data = recipes['data']
     
-        if recipes:
-            for index, data in enumerate(recipes):
+        if recipes_data:
+            for index, data in enumerate(recipes_data):
                 if index % max_recipes_per_row == 0:
                     row_layout = QHBoxLayout()
                     feed_container_layout.addLayout(row_layout)
@@ -129,32 +121,24 @@ class HomeWidget(QMainWindow):
         popup.exec_()
 
     def react(self,recipe_id,type):
-        message = {
-            "topic": "@recipe/reaction_recipe",
-            "body": {
-                "type": type,
-                "recipe_id": recipe_id,
-                "user_id": self.app.user["user"]["id"]
-            }
+        data = {
+            'user_id':self.app.user["user"]["id"],
+            'type':type
         }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        print(message)
+        path = "/recipes/"+ str(recipe_id) +"/react"
+        message = self.app.webClient.put(path, data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        message_data = json.loads(message.text)
+        message_data = message_data["data"]
+        # message = self.app.client.services["adapters.reaction_recipe_adapter"].execute(type=type,recipe_id=recipe_id,user_id=self.app.user["user"]["id"])
+        print(message_data)
 
     def save_recipe(self,recipe_id):
-        message = {
-            "topic": "@barn/save_recipe_barn",
-            "body": {
-                "id": self.app.user["user"]["barnId"],
-                "recipe_id": recipe_id
-            }
+        data = {
+            'recipeId':recipe_id,
+            'barnId':self.app.user["user"]["barnId"]
         }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        print(message)
+        message = self.app.webClient.post('/barn/save', data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        message_data = json.loads(message.text)
+        message_data = message_data["user"]
+        # message = self.app.client.services["adapters.save_recipe_adapter"].execute(barnId=self.app.user["user"]["barnId"],recipeId=recipe_id)
+        print(message_data)

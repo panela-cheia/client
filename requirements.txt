@@ -1,2 +1,4 @@
-PySide2==5.15.2
+PySide2==5.15.2.1
 python-dotenv==1.0.0
+Pyro5==5.14
+requests==2.31.0

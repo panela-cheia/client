@@ -1,8 +1,10 @@
-from PySide2.QtWidgets import QWidget, QDialog, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QFrame
-from PySide2.QtGui import QPixmap
+from PySide2.QtWidgets import QWidget, QDialog, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QLineEdit
+from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt
 
 import json
+
+from screens.main.components.dive_owner import DiveOwnerDialog
 
 class DiveProfileDialog(QDialog):
     def __init__(self, app, dive):
@@ -84,31 +86,30 @@ class DiveProfileDialog(QDialog):
         self.setLayout(main_layout)
 
     def enter_dive(self):
-        message = {
-            "topic": "@dive/enter_dive",
-            "body": {
-                "id": self.app.user["user"]["id"],
-                "diveId": self.dive["id"]
-            }
+        data = {
+            'userId': self.app.user["user"]["id"],
+            'diveId': self.dive["id"]
         }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        print(message)
+        
+        message = self.app.webClient.post('/dives/enter_dive', data=json.dumps(data), headers={'Content-Type': 'application/json'})
+        message_data = json.loads(message.text)
+        message_data = message_data["enter_dive"]
+        
+        print(message_data)
 
     def exit_dive(self):
-        message = {
-            "topic": "@dive/exit_dive",
-            "body": {
-                "user": self.app.user["user"]["id"],
-                "diveId": self.dive["id"]
-            }
+        data = {
+            'userId': self.app.user["user"]["id"],
+            'new_owner': None,
+            'diveId': self.dive["id"]
         }
-
-        message = json.dumps(message)
-        self.app.client.send(message=message)
-        message = self.app.client.read()
-
-        print(message)
+        
+        if (self.app.user["user"]["id"] == self.dive["owner_id"]):
+            popup = DiveOwnerDialog(app=self.app, dive=self.dive)
+            popup.exec_()
+        else:           
+            message = self.app.webClient.put('/dives/exit_dive', data=json.dumps(data), headers={'Content-Type': 'application/json'})
+            message_data = json.loads(message.text)
+            message_data = message_data["exit_dive"]
+            
+            print(message_data)

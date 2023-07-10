@@ -5,9 +5,9 @@ from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLa
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt
 
-from screens.main.components.image_view_dialog import ImageViewDialog
+from screens.main.components.confirm_edit_photo_user_dialog import ConfirmEditPhotoUserDialog
 
-class PopupDialog(QDialog):
+class EditPhotoUserDialog(QDialog):
     def __init__(self, app, parent=None):
         super().__init__(parent)
         self.app = app
@@ -41,7 +41,7 @@ class PopupDialog(QDialog):
         header_layout.setContentsMargins(0, 0, 0, 0)
 
         # Add the title label to the header
-        title_label = QLabel("Criar nova receita")
+        title_label = QLabel("Atualizar foto de perfil")
         title_label.setStyleSheet(
             "font-family: 'Roboto Slab';"
             "font-weight: 900;"
@@ -84,12 +84,13 @@ class PopupDialog(QDialog):
 
         # Create the image label
         self.image_label = QLabel()
-        self.image_pixmap = QPixmap("src/assets/images/create-recipe.png")
+        self.image_pixmap = QPixmap("src/assets/images/profile_user.png")
         self.image_label.setPixmap(self.image_pixmap)
+        self.image_label.setFixedSize(166, 166)
         content_layout.addWidget(self.image_label, alignment=Qt.AlignCenter)
 
         # Create the text label
-        text_label = QLabel("Atualize seu livro de receitas")
+        text_label = QLabel("Atualizar foto de perfil")
         text_label.setStyleSheet(
             "font-family: 'Roboto Slab';"
             "font-size: 20px;"
@@ -134,13 +135,12 @@ class PopupDialog(QDialog):
             response = self.app.webClient.post('/files', files=files)
 
             image_data = json.loads(response.text)
-            
-            self.handle_image_upload(response=image_data)
 
+            self.handle_image_upload(response=image_data)
 
     def handle_image_upload(self, response):  # Adicionar o parâmetro file_path
         file = response
 
         # Open a new dialog to display the selected image
-        image_dialog = ImageViewDialog(app=self.app, image_path=file)
+        image_dialog = ConfirmEditPhotoUserDialog(app=self.app, image_path=file)
         image_dialog.exec_()

@@ -1,26 +1,18 @@
-from PySide2.QtWidgets import QDialog, QLabel, QLineEdit, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QGroupBox, QFormLayout
+from PySide2.QtWidgets import QApplication, QDialog, QLabel, QLineEdit, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton, QFrame, QGroupBox, QFormLayout
 from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt
 
-from screens.main.components.ingredients_dialog import IngredientsDialog
-
-import requests
 import json
+import requests
 
 from screens.shared.errors.error_dialog import ErrorDialog
 
-class ImageViewDialog(QDialog):
+class ConfirmEditPhotoUserDialog(QDialog):
     def __init__(self,app, image_path):
         super().__init__()
         self.app = app
 
-        path_url = '/dives/list_dives/' + self.app.user["user"]["id"]
-
-        response = self.app.webClient.get(path_url)
-        response_data = json.loads(response.text)
-        message = response_data["list_dives"]
-
-        self.setWindowTitle("Imagem Selecionada")
+        self.setWindowTitle("Foto Selecionada")
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
         self.setStyleSheet(
             "QDialog {"
@@ -56,7 +48,7 @@ class ImageViewDialog(QDialog):
         header_layout.setContentsMargins(0, 0, 0, 0)
 
         # Add the title label to the header
-        title_label = QLabel("Criar nova receita")
+        title_label = QLabel("Confirmar foto de perfil")
         title_label.setStyleSheet("font-family: 'Roboto Slab';font-weight: 900;font-size: 32px;color: #341A0F;")
         title_label.setAlignment(Qt.AlignCenter)
         header_layout.addWidget(title_label, alignment=Qt.AlignCenter)
@@ -84,12 +76,13 @@ class ImageViewDialog(QDialog):
         content_layout = QVBoxLayout(content_frame)
         content_layout.setContentsMargins(0, 0, 0, 0)
 
+        encoded_image_data = image_path["path"]
+        image_data_decoded = requests.get(encoded_image_data)
+
         # Create the image label
         image_label = QLabel()
         image_pixmap = QPixmap()
-        response = requests.get(image_path["path"])
-        image_pixmap.loadFromData(response.content)
-
+        image_pixmap.loadFromData(image_data_decoded.content)
 
         # Exibe a imagem
         if not image_pixmap.isNull():
@@ -105,70 +98,8 @@ class ImageViewDialog(QDialog):
         # Add the image label to the container
         image_container_layout.addWidget(image_label, alignment=Qt.AlignCenter)
 
-        # Create the second container for the form
-        form_container = QGroupBox("Formulário")
-        form_container.setStyleSheet(
-            "QGroupBox { background-color: #FFFFFF;}"
-            "QGroupBox::title {"
-            "   font-family: 'Roboto';"
-            "   font-size: 24px;"
-            "   font-weight: 700;"
-            "   color: #341A0F;"
-            "}"
-        )
-        form_container_layout = QFormLayout(form_container)
-
-        # Create the form fields
-        name_label = QLabel("Nome:")
-        name_label.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
-        name_input = QLineEdit()
-        form_container_layout.addRow(name_label, name_input)
-
-        dica_label = QLabel("Dica:")
-        dica_label.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
-        dica_input = QLineEdit()
-        dica_button = QPushButton()
-        dica_button.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
-        dica_button.setStyleSheet(
-            "QPushButton {"
-            "   background-color: #00C985;"
-            "   border: none;"
-            "   border-radius: 10px;"
-            "   padding: 10px 20px;"
-            "   font-family: 'Roboto';"
-            "   font-size: 12px;"
-            "   font-weight: 700;"
-            "   color: #FFFFFF;"
-            "}"
-            "QPushButton:hover {"
-            "   background-color: #00C985;"
-            "}"
-        )
-        dica_button.setFixedSize(40, 40)
-        dica_button_icon = QIcon("src/assets/images/openai.png")
-        dica_button.setIcon(dica_button_icon)
-        dica_button.clicked.connect(lambda: self.add_dica(name=name_input.text(), dica=dica_input))
-        form_container_layout.addRow(dica_label)
-        form_container_layout.addRow(dica_button, dica_input)
-
-        description_label = QLabel("Descrição:")
-        description_label.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
-        description_input = QLineEdit()
-        form_container_layout.addRow(description_label, description_input)
-
-        category_label = QLabel("Buteco relacionado:")
-        category_label.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
-        category_combobox = QComboBox()
-        category_combobox.addItem("")
-
-        for dive in message:
-            category_combobox.addItem(dive["name"])
-        
-        form_container_layout.addRow(category_label, category_combobox)
-
         # Add the form container to the content layout
         content_layout.addWidget(image_container)
-        content_layout.addWidget(form_container)
 
         # Create the button layout
         button_layout = QHBoxLayout()
@@ -191,10 +122,10 @@ class ImageViewDialog(QDialog):
             "   background-color: #FF8F8F;"
             "}"
         )
-        cancel_button.clicked.connect(self.close)
+        cancel_button.clicked.connect(lambda: self.delete_photo(image_path=image_path))
 
         # Create the save button
-        save_button = QPushButton("Próximo")
+        save_button = QPushButton("Confirmar")
         save_button.setStyleSheet(
             "QPushButton {"
             "   background-color: #42210B;"
@@ -210,7 +141,7 @@ class ImageViewDialog(QDialog):
             "   background-color: #42210B;"
             "}"
         )
-        save_button.clicked.connect(lambda: self.save_recipe(name=name_input.text(),description=description_input.text(),dive=category_combobox.currentText(),image_path=image_path, message=message))
+        save_button.clicked.connect(lambda: self.submit(image_path=image_path))
 
         # Add the buttons to the button layout
         button_layout.addWidget(cancel_button)
@@ -222,25 +153,31 @@ class ImageViewDialog(QDialog):
         # Add the content frame to the main layout
         main_layout.addWidget(content_frame)
 
-    def save_recipe(self, name, description, dive, image_path, message):
+    def submit(self, image_path):
+        data = {
+            "id": self.app.user["user"]["id"],
+            "photo": image_path["id"]
+        }
+
+        response = self.app.webClient.put('/users/update_photo_user', data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        response_data = json.loads(response.text)
+        response_data = response_data["user"]
+
+        profile_path = "/users/user_profile/" + self.app.user["user"]["id"]
+
+        profile = self.app.webClient.get(profile_path)
+        profile_data = json.loads(profile.text)
+        profile_data = profile_data["user"]
+
+        self.app.user["user"]["photo"] = profile_data["photo"]
         
-        final_dive = None if self.find_object_by_name(name=dive, message=message) == None else self.find_object_by_name(name=dive, message=message)["id"]
-
-        # Open a new dialog to display the selected image
-        ingredients_dialog = IngredientsDialog(app=self.app,name=name,description=description,dive=final_dive,image_path=image_path)
-        ingredients_dialog.exec_()
-
         self.close()
 
-    def find_object_by_name(self, name, message):
-        for obj in message:
-            if obj["name"] == name:
-                return obj
-        return None
-    
-    def add_dica(self, name, dica):
-        param = {'name':name}
-        message = self.app.webClient.get('/recipes/openai/description', params=param)
-        message_data = json.loads(message.text)
-        dica.setText(message_data["description"])
-        # return message_data["description"]
+    def delete_photo(self, image_path):
+        file_name = image_path["name"]
+
+        path = "/files/" + file_name
+
+        self.app.webClient.delete(path)
+
+        self.close()

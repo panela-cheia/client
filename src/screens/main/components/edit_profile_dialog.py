@@ -1,17 +1,19 @@
 import os
-import json
+import base64
 
-from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QFrame, QFileDialog
+from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout, QFrame, QFileDialog
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt
 
-from screens.main.components.image_view_dialog import ImageViewDialog
+from screens.main.components.confirm_edit_photo_user_dialog import ConfirmEditPhotoUserDialog
 
-class PopupDialog(QDialog):
+import json
+
+class EditProfileUserDialog(QDialog):
     def __init__(self, app, parent=None):
         super().__init__(parent)
         self.app = app
-        self.setWindowTitle("Search")
+        self.setWindowTitle("Edit")
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
         self.setStyleSheet(
             "QDialog {"
@@ -41,7 +43,7 @@ class PopupDialog(QDialog):
         header_layout.setContentsMargins(0, 0, 0, 0)
 
         # Add the title label to the header
-        title_label = QLabel("Criar nova receita")
+        title_label = QLabel("Editar Perfil")
         title_label.setStyleSheet(
             "font-family: 'Roboto Slab';"
             "font-weight: 900;"
@@ -82,25 +84,50 @@ class PopupDialog(QDialog):
         # Add the content frame to the main layout
         main_layout.addWidget(content_frame)
 
-        # Create the image label
-        self.image_label = QLabel()
-        self.image_pixmap = QPixmap("src/assets/images/create-recipe.png")
-        self.image_label.setPixmap(self.image_pixmap)
-        content_layout.addWidget(self.image_label, alignment=Qt.AlignCenter)
-
         # Create the text label
-        text_label = QLabel("Atualize seu livro de receitas")
+        text_label = QLabel("Atualizar perfil")
         text_label.setStyleSheet(
             "font-family: 'Roboto Slab';"
             "font-size: 20px;"
             "color: #341A0F;"
         )
-        text_label.setAlignment(Qt.AlignCenter)
+        text_label.setAlignment(Qt.AlignLeft)
         content_layout.addWidget(text_label, alignment=Qt.AlignCenter)
 
-        # Create the upload button
-        upload_button = QPushButton("Selecione do seu computador")
-        upload_button.setStyleSheet(
+        # Create the name input
+        name_widget = QLineEdit()
+        name_widget.setFixedWidth(490)
+        name_widget.setFixedHeight(40)
+        name_widget.setStyleSheet(
+            "background: #F2F2F2; border-radius: 20px; padding: 10px; font-size: 16px;"
+        )
+        name_widget.setPlaceholderText("Nome")
+        content_layout.addWidget(name_widget, alignment=Qt.AlignCenter)
+
+        # Create the username input
+        username_widget = QLineEdit()
+        username_widget.setFixedWidth(490)
+        username_widget.setFixedHeight(40)
+        username_widget.setStyleSheet(
+            "background: #F2F2F2; border-radius: 20px; padding: 10px; font-size: 16px;"
+        )
+        username_widget.setPlaceholderText("Username")
+        content_layout.addWidget(username_widget, alignment=Qt.AlignCenter)
+
+        # Create the bio input
+        bio_widget = QLineEdit()
+        bio_widget.setFixedWidth(490)
+        bio_widget.setFixedHeight(40)
+        bio_widget.setStyleSheet(
+            "background: #F2F2F2; border-radius: 20px; padding: 10px; font-size: 16px;"
+        )
+        bio_widget.setPlaceholderText("Biografia")
+        content_layout.addWidget(bio_widget, alignment=Qt.AlignCenter)
+
+
+        # Create the confirm button
+        edit_button = QPushButton("Editar")
+        edit_button.setStyleSheet(
             "QPushButton {"
             "   background-color: #42210B;"
             "   color: white;"
@@ -118,29 +145,35 @@ class PopupDialog(QDialog):
             "   background-color: #341A0F;"
             "}"
         )
-        upload_button.clicked.connect(self.upload_image)
-        content_layout.addWidget(upload_button, alignment=Qt.AlignCenter)
+        edit_button.clicked.connect(lambda: self.handle_edit(name=name_widget.text(),username=username_widget.text(),bio=bio_widget.text()))
+        content_layout.addWidget(edit_button, alignment=Qt.AlignCenter)
 
-    def upload_image(self):
-        file_dialog = QFileDialog()
-        file_dialog.setFileMode(QFileDialog.ExistingFile)
-        file_dialog.setNameFilter("Images (*.png *.xpm *.jpg *.bmp)")
-        if file_dialog.exec_():
-            file_path = file_dialog.selectedFiles()[0]
-            name = os.path.abspath(file_path)
+    def handle_edit(self, name, username, bio):
+        final_name = name if name != "" else self.app.user["user"]["name"]
+        final_username = username if username != "" else self.app.user["user"]["username"]
+        final_bio = bio if bio != "" else self.app.user["user"]["bio"]
+        final_bio = final_bio if final_bio is not None else ""
 
-            files = {'file': open(name, 'rb')}
+        data = {
+            "name":final_name,
+            "username":final_username,
+            "bio":final_bio
+        }
 
-            response = self.app.webClient.post('/files', files=files)
+        path = "/users/" + self.app.user["user"]["id"] + "/update_profile"
 
-            image_data = json.loads(response.text)
-            
-            self.handle_image_upload(response=image_data)
+        response = self.app.webClient.put(path, data=json.dumps(data),headers={'Content-Type': 'application/json'})
+        response_data = json.loads(response.text)
+        response_data = response_data["user"]
 
+        profile_path = "/users/user_profile/" + self.app.user["user"]["id"]
 
-    def handle_image_upload(self, response):  # Adicionar o parâmetro file_path
-        file = response
+        profile = self.app.webClient.get(profile_path)
+        profile_data = json.loads(profile.text)
+        profile_data = profile_data["user"]
 
-        # Open a new dialog to display the selected image
-        image_dialog = ImageViewDialog(app=self.app, image_path=file)
-        image_dialog.exec_()
+        self.app.user["user"]["name"] = profile_data["name"]
+        self.app.user["user"]["username"] = profile_data["username"]
+        self.app.user["user"]["bio"] = profile_data["bio"]
+     
+        self.close()

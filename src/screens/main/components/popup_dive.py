@@ -1,38 +1,13 @@
 import os
 import json
 import base64
+import requests
 
 from PySide2.QtWidgets import QFrame, QDialog, QMessageBox, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QSizePolicy
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt,QThread,Signal
 
 from screens.shared.errors.error_dialog import ErrorDialog  
-
-class ImageUploadThread(QThread):
-    image_uploaded = Signal(str)  # Adicionado novo parâmetro para file_path
-
-    def __init__(self, file_path):
-        super().__init__()
-        self.file_path = file_path
-
-    def run(self):
-        name = os.path.basename(self.file_path)
-
-        with open(self.file_path, "rb") as file:
-            image_data = file.read()
-
-        # Codifica os dados da imagem em Base64
-        encoded_image_data = base64.b64encode(image_data).decode("utf-8")
-
-        message = {
-            "topic": "@file/create_file",
-            "body": {
-                "name": name,
-                "path": encoded_image_data
-            }
-        }
-
-        self.image_uploaded.emit(json.dumps(message))  # Emitir também o file_path
 
 class PopupDive(QDialog):
     def __init__(self,app,handle_create_dive):
@@ -60,9 +35,7 @@ class PopupDive(QDialog):
             "}"
         )
         self.setFixedSize(640, 640)
-        
-        
-        
+                
         layout = QVBoxLayout(self)
         
         # Create the header frame
@@ -180,7 +153,6 @@ class PopupDive(QDialog):
             "   background-color: #341A0F;"
             "}"
         )
-        
         create_button.clicked.connect(self.create_buteco)
         self.content_layout.addWidget(create_button, alignment=Qt.AlignCenter)
     
@@ -271,27 +243,29 @@ class PopupDive(QDialog):
         
         if file_dialog.exec_():
             file_path = file_dialog.selectedFiles()[0]
-            
-            upload_thread = ImageUploadThread(file_path)
-            upload_thread.image_uploaded.connect(self.handle_image_upload)
-            upload_thread.start()
+            name = os.path.abspath(file_path)
 
-    def handle_image_upload(self, message):
-        self.app.client.send(message=message)
-        response = self.app.client.read()
-        
-        file = json.loads(response)
+            files = {'file': open(name, 'rb')}
+
+            response = self.app.webClient.post('/files', files=files)
+
+            image_data = json.loads(response.text)
+            
+            self.handle_image_upload(response=image_data)
+
+    def handle_image_upload(self, response):
+    
+        file = response
         self.file = file
         
         # Verifica se a imagem foi carregada com sucesso
         if "path" in file:
-            encoded_image_data = file["path"]
-            image_data_decoded = base64.b64decode(encoded_image_data)
+            response = requests.get(file["path"])
         
             # Cria o QLabel para exibir a imagem
             image_label = QLabel()
             image_pixmap = QPixmap()
-            image_pixmap.loadFromData(image_data_decoded)
+            image_pixmap.loadFromData(response.content)
             
             # Exibe a imagem
             if not image_pixmap.isNull():
