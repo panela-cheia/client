@@ -127,11 +127,11 @@ class ImageViewDialog(QDialog):
         dica_label = QLabel("Dica:")
         dica_label.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
         dica_input = QLineEdit()
-        dica_button = QPushButton("Adicionar")
+        dica_button = QPushButton()
         dica_button.setStyleSheet("font-family: 'Roboto Slab';font-style: normal;font-weight: 500;font-size: 12px;color: #341A0F;")
         dica_button.setStyleSheet(
             "QPushButton {"
-            "   background-color: #42210B;"
+            "   background-color: #00C985;"
             "   border: none;"
             "   border-radius: 10px;"
             "   padding: 10px 20px;"
@@ -141,10 +141,12 @@ class ImageViewDialog(QDialog):
             "   color: #FFFFFF;"
             "}"
             "QPushButton:hover {"
-            "   background-color: #42210B;"
+            "   background-color: #00C985;"
             "}"
         )
-        dica_button.setFixedWidth(100)
+        dica_button.setFixedSize(40, 40)
+        dica_button_icon = QIcon("src/assets/images/openai.png")
+        dica_button.setIcon(dica_button_icon)
         dica_button.clicked.connect(lambda: self.add_dica(name=name_input.text(), dica=dica_input))
         form_container_layout.addRow(dica_label)
         form_container_layout.addRow(dica_button, dica_input)
